@@ -1,0 +1,25 @@
+<!-- TechLife VoiceBridge — FreeSWITCH Dialplan -->
+<include>
+  <extension name="techlife_ai_9000">
+    <condition field="destination_number" expression="^9000$">
+      <action application="answer"/>
+      <action application="set" data="CHANNEL(audioreadformat)=slin16"/>
+      <action application="set" data="CHANNEL(audiowriteformat)=slin16"/>
+      <action application="socket" data="127.0.0.1:8766 async full"/>
+      <action application="hangup"/>
+    </condition>
+  </extension>
+  <extension name="techlife_inbound">
+    <condition field="destination_number" expression="^(\d{4})$">
+      <action application="answer"/>
+      <action application="socket" data="127.0.0.1:8766 async full"/>
+      <action application="hangup"/>
+    </condition>
+  </extension>
+  <extension name="echo_7000">
+    <condition field="destination_number" expression="^7000$">
+      <action application="answer"/>
+      <action application="echo"/>
+    </condition>
+  </extension>
+</include>

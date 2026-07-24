@@ -1,0 +1,5 @@
+# /etc/kamailio/dispatcher.list
+# Group 1 = FreeSWITCH (primary media server)
+1 0 sip:127.0.0.1:5080
+# Group 2 = Asterisk (fallback)
+2 0 sip:127.0.0.1:5060

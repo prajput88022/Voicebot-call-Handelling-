@@ -1,0 +1,20 @@
+[Unit]
+Description=TechLife VoiceBridge Enterprise
+After=network.target couchdb.service
+Wants=couchdb.service
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/techlife-voicebridge
+EnvironmentFile=/opt/techlife-voicebridge/.env
+ExecStart=/usr/bin/node src/index.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=techlife-voicebridge
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

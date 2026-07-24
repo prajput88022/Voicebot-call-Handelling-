@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TechLife VoiceBridge Enterprise</title>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+* {box-sizing: border-box; margin: 0; padding: 0;}
+:root {
+  --bg: #080c14;
+  --bg2: #0d1422;
+  --bg3: #111a2e;
+  --b1: rgba(99,179,255,.08);
+  --b2: rgba(99,179,255,.18);
+  --acc: #1a8fff;
+  --grn: #00e5a0;
+  --ora: #ff6b35;
+  --pur: #a855f7;
+  --yel: #fbbf24;
+  --red: #ef4444;
+  --txt: #e8f4ff;
+  --mut: #6b8ab0;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: -apple-system, 'Segoe UI', sans-serif;
+}
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+.app { display: flex; flex-direction: column; flex: 1; }
+.topbar {
+  height: 46px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--b1);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.logo-sq {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  background: var(--acc);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+}
+.sp { flex: 1; }
+.tb-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--b2);
+}
+.tb-badge-sa {
+  background: rgba(168, 85, 247, .1);
+  color: var(--pur);
+  border-color: rgba(168, 85, 247, .25);
+}
+.tb-badge-admin {
+  background: rgba(26, 143, 255, .1);
+  color: var(--acc);
+  border-color: var(--b2);
+}
+.tb-badge-agent {
+  background: rgba(0, 229, 160, .08);
+  color: var(--grn);
+  border-color: rgba(0, 229, 160, .2);
+}
+.pg { display: none; flex: 1; }
+.pg.on { display: flex; }
+
+/* LOGIN */
+.lw {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--bg3);
+}
+.lbox {
+  width: 100%;
+  max-width: 380px;
+}
+.lhdr {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.lhdr h1 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.lhdr p {
+  font-size: 12px;
+  color: var(--mut);
+}
+.ltabs {
+  display: flex;
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 16px;
+  border: 1px solid var(--b1);
+}
+.ltab {
+  flex: 1;
+  padding: 7px;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--mut);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: .15s;
+}
+.ltab.on {
+  background: var(--bg);
+  color: var(--txt);
+  font-weight: 500;
+  box-shadow: 0 0 0 1px var(--b1);
+}
+.lcard {
+  background: var(--bg2);
+  border: 1px solid var(--b1);
+  border-radius: 10px;
+  padding: 20px;
+}
+.licon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  font-size: 18px;
+}
+.licon-sa {
+  background: rgba(168, 85, 247, .12);
+  color: var(--pur);
+}
+.licon-t {
+  background: rgba(0, 229, 160, .1);
+  color: var(--grn);
+}
+.ltitle {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.lsub {
+  text-align: center;
+  font-size: 11px;
+  color: var(--mut);
+  margin-bottom: 14px;
+}
+.fg {
+  margin-bottom: 10px;
+}
+.fg label {
+  display: block;
+  font-size: 10px;
+  color: var(--mut);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+.fg input,
+.fg select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--b2);
+  color: var(--txt);
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  transition: .15s;
+}
+.fg input:focus,
+.fg select:focus {
+  border-color: var(--acc);
+}
+.btn-lg {
+  width: 100%;
+  padding: 9px;
+  border-radius: 6px;
+  background: var(--acc);
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: .15s;
+}
+.btn-lg:hover {
+  opacity: .9;
+}
+.btn-lg.g {
+  background: var(--grn);
+  color: #080c14;
+}
+.lerr {
+  font-size: 11px;
+  color: var(--red);
+  text-align: center;
+  margin-top: 8px;
+  min-height: 14px;
+}
+.lhint {
+  margin-top: 12px;
+  background: var(--bg3);
+  border-radius: 6px;
+  padding: 9px 11px;
+  border: 1px solid var(--b1);
+  font-size: 11px;
+  color: var(--mut);
+  line-height: 1.7;
+}
+.lhint b {
+  color: var(--txt);
+}
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  flex: 1;
+  overflow: hidden;
+  min-height: 560px;
+}
+.sb {
+  background: var(--bg2);
+  border-right: 1px solid var(--b1);
+  padding: 10px 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sb-hdr {
+  padding: 9px 8px 12px;
+  border-bottom: 1px solid var(--b1);
+  margin-bottom: 6px;
+}
+.sb-hdr-name {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.sb-hdr-sub {
+  font-size: 10px;
+  color: var(--mut);
+}
+.sbs {
+  font-size: 9px;
+  color: var(--mut);
+  padding: 4px 8px;
+  margin: 10px 0 3px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+.sbi {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--mut);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: .15s;
+}
+.sbi:hover {
+  background: rgba(255,255,255,.04);
+}
+.sbi.on {
+  background: rgba(26, 143, 255, .08);
+  color: var(--txt);
+  font-weight: 500;
+}
+.sb-footer {
+  margin-top: auto;
+  padding: 10px 8px;
+  border-top: 1px solid var(--b1);
+}
+.main {
+  overflow-y: auto;
+  padding: 18px;
+  background: var(--bg3);
+}
+.sec-hdr {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+.sec-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.sec-sub {
+  font-size: 11px;
+  color: var(--mut);
+  margin-top: 2px;
+}
+.btn-row {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--b2);
+  background: var(--bg2);
+  color: var(--txt);
+  font-size: 11px;
+  cursor: pointer;
+  transition: .15s;
+}
+.btn:hover {
+  border-color: var(--acc);
+  color: var(--acc);
+}
+.btn.acc {
+  background: var(--acc);
+  color: #fff;
+}
+.btn.acc:hover {
+  opacity: .9;
+}
+.btn.grn {
+  background: var(--grn);
+  color: #080c14;
+}
+.btn.red {
+  color: var(--red);
+  border-color: rgba(239, 68, 68, .3);
+}
+.btn.red:hover {
+  background: rgba(239, 68, 68, .08);
+}
+.mgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.mc {
+  background: var(--bg2);
+  border-radius: 7px;
+  padding: 11px 13px;
+  border: 1px solid var(--b1);
+}
+.ml {
+  font-size: 10px;
+  color: var(--mut);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.mv {
+  font-size: 20px;
+  font-weight: 600;
+}
+.ms {
+  font-size: 10px;
+  color: var(--mut);
+  margin-top: 2px;
+}
+.c-b { color: var(--acc); }
+.c-g { color: var(--grn); }
+.c-o { color: var(--ora); }
+.c-p { color: var(--pur); }
+.c-y { color: var(--yel); }
+.c-r { color: var(--red); }
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--b1);
+  border-radius: 9px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--txt);
+}
+.twrap {
+  background: var(--bg2);
+  border: 1px solid var(--b1);
+  border-radius: 9px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.twrap-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--b1);
+}
+.twrap-title {
+  font-size: 12px;
+  font-weight: 600;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+th {
+  padding: 7px 11px;
+  text-align: left;
+  font-size: 10px;
+  color: var(--mut);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  border-bottom: 1px solid var(--b1);
+  background: var(--bg3);
+  font-weight: 500;
+  white-space: nowrap;
+}
+td {
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--b1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+tr:hover td {
+  background: rgba(255,255,255,.02);
+}
+.mono {
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  gap: 3px;
+  white-space: nowrap;
+}
+.p-active { background: rgba(0,229,160,.1); color: var(--grn); }
+.p-pro { background: rgba(26,143,255,.1); color: var(--acc); }
+.p-ent { background: rgba(168,85,247,.1); color: var(--pur); }
+.p-starter { background: rgba(107,138,176,.1); color: var(--mut); }
+.p-admin { background: rgba(26,143,255,.1); color: var(--acc); }
+.p-sup { background: rgba(255,107,53,.1); color: var(--ora); }
+.p-agent { background: rgba(168,85,247,.1); color: var(--pur); }
+.p-online { background: rgba(0,229,160,.1); color: var(--grn); }
+.p-busy { background: rgba(255,107,53,.1); color: var(--ora); }
+.p-offline { background: rgba(107,138,176,.1); color: var(--mut); }
+
+.alert {
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  margin-bottom: 12px;
+  border: 1px solid;
+}
+.al-info {
+  background: rgba(26,143,255,.06);
+  color: var(--acc);
+  border-color: rgba(26,143,255,.2);
+}
+.al-ok {
+  background: rgba(0,229,160,.06);
+  color: var(--grn);
+  border-color: rgba(0,229,160,.2);
+}
+.al-warn {
+  background: rgba(255,107,53,.06);
+  color: var(--ora);
+  border-color: rgba(255,107,53,.2);
+}
+code {
+  font-family: var(--mono);
+  font-size: 10px;
+  background: rgba(26,143,255,.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--acc);
+}
+
+.tcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.tcard {
+  background: var(--bg2);
+  border: 1px solid var(--b1);
+  border-radius: 9px;
+  padding: 12px;
+  cursor: pointer;
+  transition: .15s;
+}
+.tcard:hover {
+  border-color: var(--b2);
+}
+.tc-av {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.tc-name {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tc-id {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--mut);
+  margin-bottom: 6px;
+}
+
+.bar-wrap {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 55px;
+  margin-bottom: 5px;
+}
+.bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  background: var(--acc);
+  opacity: .65;
+  min-height: 3px;
+}
+.bar-lbls {
+  display: flex;
+  justify-content: space-between;
+}
+.bar-lbl {
+  font-size: 9px;
+  color: var(--mut);
+}
+.lang-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+.lb {
+  flex: 1;
+  height: 3px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.lf {
+  height: 100%;
+  border-radius: 2px;
+}
+.call-item {
+  background: var(--bg2);
+  border: 1px solid var(--b1);
+  border-radius: 9px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-left: 2px solid var(--grn);
+}
+.ci-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.ci-body {
+  background: var(--bg3);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.ci-tr {
+  font-size: 10px;
+  color: var(--mut);
+  font-style: italic;
+  margin-top: 3px;
+}
+.ci-ai {
+  font-size: 11px;
+  color: var(--pur);
+  margin-top: 4px;
+}
+.ci-lat {
+  font-size: 10px;
+  color: var(--mut);
+  margin-top: 6px;
+}
+.wh-item {
+  background: var(--bg2);
+  border: 1px solid var(--b1);
+  border-radius: 7px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.wh-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.wh-url {
+  font-family: var(--mono);
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 260px;
+}
+.wh-evts {
+  font-size: 10px;
+  color: var(--mut);
+  margin-top: 3px;
+}
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--b1);
+}
+.price-row:last-child {
+  border-bottom: none;
+}
+.pr-name {
+  flex: 1;
+  font-size: 12px;
+}
+.pr-unit {
+  font-size: 9px;
+  color: var(--mut);
+  width: 60px;
+  text-align: right;
+}
+.pr-inp {
+  width: 95px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-align: right;
+}
+.modal-wrap {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-wrap.on {
+  display: flex;
+}
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--b2);
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.mfooter {
+  display: flex;
+  gap: 7px;
+  justify-content: flex-end;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--b1);
+}
+.frow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.frow.full {
+  grid-template-columns: 1fr;
+  margin-bottom: 10px;
+}
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--b2);
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar" id="topbar">
+  <div class="logo"><div class="logo-sq">TL</div>VoiceBridge <span style="color:var(--mut);font-weight:400">Enterprise</span></div>
+  <div class="sp"></div>
+  <span class="tb-badge" id="role-badge"></span>
+  <span id="user-lbl" style="font-size:11px;color:var(--mut)"></span>
+  <button class="btn red" onclick="logout()" style="padding:4px 10px;font-size:11px">Sign out</button>
+</div>
+
+<!-- LOGIN -->
+<div class="pg on" id="pg-login">
+  <div class="lw"><div class="lbox">
+    <div class="lhdr"><h1>TechLife VoiceBridge</h1><p>Enterprise Multi-Tenant Platform</p></div>
+    <div class="ltabs">
+      <button class="ltab on" id="lt-sa" onclick="setLT('sa')">Super Admin</button>
+      <button class="ltab" id="lt-t" onclick="setLT('tenant')">Tenant Login</button>
+    </div>
+    <div id="lc-sa">
+      <div class="lcard">
+        <div class="licon licon-sa">??</div>
+        <div class="ltitle">Super Admin Portal</div>
+        <div class="lsub">Full platform control — all tenants</div>
+        <div class="fg"><label>Email</label><input id="sa-em" type="email" value="superadmin@techlife.ai"></div>
+        <div class="fg"><label>Password</label><input id="sa-pw" type="password" value="SuperAdmin@2024" onkeydown="if(event.key==='Enter')doLogin('sa')"></div>
+        <button class="btn-lg" onclick="doLogin('sa')">Sign in as Super Admin</button>
+        <div class="lerr" id="sa-err"></div>
+        <div class="lhint"><b>Demo:</b> superadmin@techlife.ai / SuperAdmin@2024</div>
+      </div>
+    </div>
+    <div id="lc-t" style="display:none">
+      <div class="lcard">
+        <div class="licon licon-t">??</div>
+        <div class="ltitle">Tenant Login</div>
+        <div class="lsub">Sign in to your organisation</div>
+        <div class="fg"><label>Tenant ID</label>
+          <select id="t-sel">
+            <option value="demo_corp">Demo Corp</option>
+            <option value="acme_ai">Acme AI Solutions</option>
+            <option value="global_bpo">Global BPO Ltd</option>
+          </select>
+        </div>
+        <div class="fg"><label>Email</label><input id="t-em" value="admin@democorp.com"></div>
+        <div class="fg"><label>Role</label>
+          <select id="t-role"><option value="admin">Admin</option><option value="supervisor">Supervisor</option><option value="agent">Agent</option></select>
+        </div>
+        <div class="fg"><label>Password</label><input id="t-pw" type="password" value="Admin@1234" onkeydown="if(event.key==='Enter')doLogin('tenant')"></div>
+        <button class="btn-lg g" onclick="doLogin('tenant')">Sign in to Tenant</button>
+        <div class="lerr" id="t-err"></div>
+        <div class="lhint"><b>Admin:</b> admin@democorp.com / Admin@1234<br><b>Agent:</b> agent@democorp.com / Agent@1234</div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- SUPERADMIN -->
+<div class="pg" id="pg-sa" style="flex:1">
+  <div class="layout">
+    <div class="sb">
+      <div class="sb-hdr"><div class="sb-hdr-name">Super Admin</div><div class="sb-hdr-sub">Full platform control</div></div>
+      <div class="sbs">Platform</div>
+      <button class="sbi on" onclick="saNav('overview',this)">?? Overview</button>
+      <button class="sbi" onclick="saNav('tenants',this)">?? Tenants</button>
+      <button class="sbi" onclick="saNav('create',this)">? New tenant</button>
+      <div class="sbs">Reports</div>
+      <button class="sbi" onclick="saNav('greports',this)">?? Global reports</button>
+      <button class="sbi" onclick="saNav('gbilling',this)">?? Billing overview</button>
+      <div class="sbs">Config</div>
+      <button class="sbi" onclick="saNav('vendors',this)">?? AI vendors</button>
+      <button class="sbi" onclick="saNav('audit',this)">?? Audit log</button>
+    </div>
+    <div class="main" id="sa-main"></div>
+  </div>
+</div>
+
+<!-- TENANT -->
+<div class="pg" id="pg-tenant" style="flex:1">
+  <div class="layout">
+    <div class="sb" id="t-sb">
+      <div class="sb-hdr" id="t-sb-hdr"></div>
+      <div class="sbs">Overview</div>
+      <button class="sbi on" onclick="tNav('dashboard',this)">?? Dashboard</button>
+      <button class="sbi" onclick="tNav('calls',this)">?? Live calls</button>
+      <div class="sbs">Reports</div>
+      <button class="sbi" onclick="tNav('cdr',this)">?? CDR</button>
+      <button class="sbi" onclick="tNav('acd',this)">?? ACD report</button>
+      <button class="sbi" onclick="tNav('csat',this)">?? CSAT</button>
+      <button class="sbi" onclick="tNav('queue',this)">?? Queue</button>
+      <button class="sbi" onclick="tNav('agents-rpt',this)">?? Agent report</button>
+      <button class="sbi" onclick="tNav('billing',this)">?? Billing</button>
+      <div class="sbs">VoiceBot</div>
+      <button class="sbi" onclick="tNav('bots',this)">?? Bot agents</button>
+      <button class="sbi" onclick="tNav('campaigns',this)">?? Outbound</button>
+      <div class="sbs admin-only" style="display:none">Admin</div>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('users',this)">?? Users</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('pricing',this)">?? Pricing</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('pbx',this)">?? PBX config</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('webhooks',this)">?? Webhooks</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('crm',this)">?? CRM</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('botconfig',this)">?? Bot config</button>
+      <div class="sb-footer" id="t-sb-footer"></div>
+    </div>
+    <div class="main" id="t-main"></div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="modal-wrap" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-box"></div>
+</div>
+</div>
+
+<script>
+// --- API base URL ---
+// The frontend is served from the Dashboard/Socket.IO port (DASHBOARD_PORT,
+// default 3000), but the REST API lives on a separate port (API_PORT,
+// default 4000). All /api/... calls below must be sent to that port
+// explicitly rather than as relative paths (which would otherwise go back
+// to port 3000 and 404). If you change API_PORT in .env, update the 4000
+// below to match, or replace this line with a fixed URL.
+const API_PORT = 4000;
+const API_BASE = `${location.protocol}//${location.hostname}:${API_PORT}`;
+// --- State ---
+let curUser = null, curTenant = null, ltype = 'sa', token = null;
+let saCur='overview', tCur='dashboard';
+
+const DEMO_TENANTS = [
+  {id:'demo_corp', name:'Demo Corp', plan:'pro', status:'active', calls:1284, agents:8, cost:42.18, langs:['en','hi','es'], llm:'claude_sonnet', asr:'whisper', tts:'azure', trans:'deepl', pbx:'asterisk'},
+  {id:'acme_ai', name:'Acme AI Solutions', plan:'enterprise', status:'active', calls:3891, agents:24, cost:187.44, langs:['en','ar','fr'], llm:'gpt4o', asr:'deepgram', tts:'elevenlabs', trans:'azure', pbx:'freeswitch'},
+  {id:'global_bpo', name:'Global BPO Ltd', plan:'starter', status:'active', calls:412, agents:4, cost:8.93, langs:['en','hi'], llm:'claude_haiku', asr:'whisper', tts:'azure', trans:'deepl', pbx:'kamailio'},
+];
+const DEMO_USERS = {
+  demo_corp: [
+    {id:'u1', name:'Admin User', email:'admin@democorp.com', role:'admin', status:'online', exten:'1001', langs:['en','hi']},
+    {id:'u2', name:'Priya Sharma', email:'priya@democorp.com', role:'supervisor', status:'online', exten:'1002', langs:['en','hi']},
+    {id:'u3', name:'Raj Kumar', email:'raj@democorp.com', role:'agent', status:'busy', exten:'1003', langs:['en']},
+    {id:'u4', name:'Ana Garcia', email:'ana@democorp.com', role:'agent', status:'offline', exten:'1004', langs:['en','es']}
+  ],
+  acme_ai: [
+    {id:'u5', name:'Ahmed Hassan', email:'ahmed@acme.ai', role:'admin', status:'online', exten:'2001', langs:['en','ar']},
+    {id:'u6', name:'Marie Dubois', email:'marie@acme.ai', role:'supervisor', status:'online', exten:'2002', langs:['en','fr']}
+  ],
+  global_bpo: [
+    {id:'u7', name:'Suresh Patel', email:'suresh@globalbpo.com', role:'admin', status:'online', exten:'3001', langs:['en']}
+  ],
+};
+const DEMO_WH = {
+  demo_corp: [
+    {id:'wh1', name:'HubSpot CRM', url:'https://api.hubapi.com/webhooks/v3/callback', events:'call.ended, csat', enabled:true},
+    {id:'wh2', name:'Zapier', url:'https://hooks.zapier.com/hooks/catch/abc123', events:'call.started, call.ended, cdr', enabled:true}
+  ],
+  acme_ai: [
+    {id:'wh3', name:'Salesforce', url:'https://acme.salesforce.com/services/apexrest', events:'call.ended', enabled:true}
+  ],
+  global_bpo: []
+};
+const LIVE = [
+  {id:'c2841', tenant:'demo_corp', lang:'es', caller:'+34612345', pbx:'asterisk', dur:243, transcript:'Necesito ayuda con mi pedido 88421.', translated:'I need help with my order 88421.', ai_reply:'Order #88421 is in transit via DHL, arriving tomorrow.', asr_ms:88, ai_ms:76, total_ms:338},
+  {id:'c2842', tenant:'demo_corp', lang:'hi', caller:'+9198123', pbx:'freeswitch', dur:87, transcript:'à¤®à¥‡à¤°à¥‡ à¤–à¤¾à¤¤à¥‡ à¤®à¥‡à¤‚ à¤¸à¤®à¤¸à¥à¤¯à¤¾ à¤¹à¥ˆà¥¤', translated:'There is a problem with my account.', ai_reply:'I can see your account. Can you describe the issue?', asr_ms:92, ai_ms:81, total_ms:356}
+];
+const LANG_N = { en:'English', es:'Spanish', hi:'Hindi', fr:'French', ar:'Arabic', zh:'Chinese' };
+
+// --- Functions ---
+function setLT(t) {
+  ltype = t;
+  document.getElementById('lt-sa').classList.toggle('on', t==='sa');
+  document.getElementById('lt-t').classList.toggle('on', t==='tenant');
+  document.getElementById('lc-sa').style.display = t==='sa' ? 'block' : 'none';
+  document.getElementById('lc-t').style.display = t==='tenant' ? 'block' : 'none';
+}
+
+async function doLogin(type) {
+  if (type==='sa') {
+    const em=document.getElementById('sa-em').value;
+    const pw=document.getElementById('sa-pw').value;
+    if (!em || !pw) {
+      document.getElementById('sa-err').textContent='Fill all fields';
+      return;
+    }
+    // Try real API first, fall back to demo
+    try {
+      const r= await fetch(API_BASE+'/api/superadmin/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:em, password:pw})});
+      const d= await r.json();
+      if (d.token) {
+        token = d.token;
+        curUser = {email: em, role:'superadmin', name:'Super Admin'};
+        afterLogin('sa');
+        return;
+      }
+    } catch {}
+    // Demo mode
+    if (em==='superadmin@techlife.ai' && pw==='SuperAdmin@2024') {
+      curUser={email: em, role:'superadmin', name:'Super Admin'};
+      afterLogin('sa');
+    } else {
+      document.getElementById('sa-err').textContent='Invalid credentials';
+    }
+  } else {
+    const tid=document.getElementById('t-sel').value;
+    const em=document.getElementById('t-em').value;
+    const pw=document.getElementById('t-pw').value;
+    const role=document.getElementById('t-role').value;
+    const t=DEMO_TENANTS.find(x=>x.id===tid);
+    if (!t) {
+      document.getElementById('t-err').textContent='Tenant not found';
+      return;
+    }
+    try {
+      const r= await fetch(`${API_BASE}/api/tenant/${tid}/login`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:em, password:pw})});
+      const d= await r.json();
+      if (d.token) {
+        token=d.token;
+        curUser={email: em, role: d.user.role, name: d.user.name, tenant_id: tid};
+        curTenant = t;
+        afterLogin('tenant');
+        return;
+      }
+    } catch {}
+    // Demo mode
+    curUser={email: em, role: role || 'agent', name: em.split('@')[0], tenant_id: tid};
+    curTenant = t;
+    afterLogin('tenant');
+  }
+}
+
+function afterLogin(mode) {
+  document.getElementById('pg-login').classList.remove('on');
+  document.getElementById('topbar').style.display='flex';
+  const rb=document.getElementById('role-badge');
+  const r=curUser.role;
+  rb.textContent=r==='superadmin'?'SUPER ADMIN': r==='admin'?'ADMIN': 'AGENT';
+  rb.className='tb-badge tb-badge-'+(r==='superadmin'?'sa':r==='admin'?'admin':'agent');
+  document.getElementById('user-lbl').textContent=curUser.name + (curTenant ? ' — '+curTenant.name:'');
+  if (mode==='sa') {
+    document.getElementById('pg-sa').classList.add('on');
+    saRender('overview');
+  } else {
+    document.getElementById('pg-tenant').classList.add('on');
+    buildTSB();
+    tRender('dashboard');
+  }
+}
+
+function logout() {
+  curUser=null; curTenant=null; token=null;
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('pg-sa').classList.remove('on');
+  document.getElementById('pg-tenant').classList.remove('on');
+  document.getElementById('pg-login').classList.add('on');
+}
+
+// Build Tenant Sidebar Header
+function buildTSB() {
+  const t=curTenant;
+  const avC=[['rgba(26,143,255,.15)', '#1a8fff'], ['rgba(0,229,160,.12)', '#00e5a0'], ['rgba(168,85,247,.12)', '#a855f7']];
+  const index = DEMO_TENANTS.findIndex(x => x.id===t.id);
+  const [bg, fg] = avC[index % 3];
+  const el1003 = document.getElementById('t-sb-hdr');
+  if (el1003) el1003.innerHTML=`
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+      <div style="width:26px;height:26px;border-radius:5px;background:${bg};color:${fg};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">
+        ${t.name.slice(0,2).toUpperCase()}
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600">${t.name}</div>
+        <div style="font-size:9px;font-family:var(--mono);color:var(--mut)">${t.id}</div>
+      </div>
+    </div>
+    <span class="pill p-${t.plan==='pro'?'pro':t.plan==='enterprise'?'ent':'starter'}">${t.plan}</span>
+  `;
+  const isAdmin=['admin','superadmin'].includes(curUser.role);
+  document.querySelectorAll('.admin-only').forEach(e=>e.style.display=isAdmin?'':'none');
+  const el1017 = document.getElementById('t-sb-footer');
+  if (el1017) el1017.innerHTML=`
+    <div style="display:flex;align-items:center;gap:5px">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--grn)"></div>
+      <span style="font-size:11px">${curUser.name}</span>
+      <span class="pill p-${curUser.role}" style="margin-left:auto">${curUser.role}</span>
+    </div>
+  `;
+}
+
+// --- Navigation functions ---
+function saNav(sec, el) {
+  document.querySelectorAll('#pg-sa .sbi').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  saCur = sec;
+  saRender(sec);
+}
+
+function saRender(sec) {
+  const el = document.getElementById('sa-main');
+  const totCalls = DEMO_TENANTS.reduce((s,t) => s+t.calls, 0);
+  const totCost = DEMO_TENANTS.reduce((s,t) => s+t.cost, 0);
+  if (sec==='overview') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Platform overview</div><div class="sec-sub">All tenants — live</div></div></div>
+      <div class="mgrid">
+        <div class="mc"><div class="ml">Total tenants</div><div class="mv c-b">${DEMO_TENANTS.length}</div><div class="ms">all active</div></div>
+        <div class="mc"><div class="ml">Active calls</div><div class="mv c-g">${LIVE.length}</div><div class="ms">live now</div></div>
+        <div class="mc"><div class="ml">Calls/month</div><div class="mv c-p">${totCalls.toLocaleString()}</div></div>
+        <div class="mc"><div class="ml">Total agents</div><div class="mv c-b">${DEMO_TENANTS.reduce((s,t) => s+t.agents, 0)}</div></div>
+        <div class="mc"><div class="ml">AI cost/month</div><div class="mv c-g">$${totCost.toFixed(2)}</div></div>
+      </div>
+      <div class="tcard-grid">
+        ${DEMO_TENANTS.map((t,i) => {
+          const [bg, fg] = [['rgba(26,143,255,.15)', '#1a8fff'], ['rgba(0,229,160,.12)', '#00e5a0'], ['rgba(168,85,247,.12)', '#a855f7']][i%3];
+          return `
+            <div class="tcard" onclick="loginAsTenant('${t.id}')">
+              <div class="tc-av" style="background:${bg};color:${fg}">${t.name.slice(0,2).toUpperCase()}</div>
+              <div class="tc-name">${t.name}</div>
+              <div class="tc-id">${t.id}</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span class="pill p-active">active</span>
+                <span class="pill p-${t.plan==='pro'?'pro':t.plan==='enterprise'?'ent':'starter'}">${t.plan}</span>
+              </div>
+              <div style="font-size:10px;color:var(--mut);margin-top:6px">${t.calls.toLocaleString()} calls • $${t.cost.toFixed(2)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="twrap">
+        <div class="twrap-hdr">
+          <span class="twrap-title">Live calls across platform</span>
+          <span style="font-size:11px;color:var(--mut)">${LIVE.length} active</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Call ID</th>
+              <th>Tenant</th>
+              <th>Language</th>
+              <th>PBX</th>
+              <th>Duration</th>
+              <th>Latency</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${LIVE.map(c => `
+              <tr>
+                <td class="mono" style="color:var(--acc)">#${c.id.slice(-4)}</td>
+                <td>${DEMO_TENANTS.find(t => t.id===c.tenant)?.name || c.tenant}</td>
+                <td>${LANG_N[c.lang] || c.lang}</td>
+                <td class="mono">${c.pbx}</td>
+                <td>${Math.floor(c.dur/60)}:${String(c.dur%60).padStart(2,'0')}</td>
+                <td class="mono" style="color:var(--grn)">${c.total_ms}ms</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } else if (sec==='tenants') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Tenant management</div></div>
+        <div class="btn-row"><button class="btn acc" onclick="saNav('create',document.querySelector('#pg-sa .sbi:nth-child(3)'))">+ New tenant</button></div>
+      </div>
+      <div class="twrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Plan</th>
+              <th>Agents</th>
+              <th>Calls</th>
+              <th>AI cost</th>
+              <th>PBX</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${DEMO_TENANTS.map(t => `
+              <tr>
+                <td style="font-weight:600">${t.name}</td>
+                <td class="mono">${t.id}</td>
+                <td><span class="pill p-${t.plan==='pro'?'pro':t.plan==='enterprise'?'ent':'starter'}">${t.plan}</span></td>
+                <td>${t.agents}</td>
+                <td>${t.calls.toLocaleString()}</td>
+                <td style="color:var(--grn)">$${t.cost.toFixed(2)}</td>
+                <td class="mono">${t.pbx}</td>
+                <td>
+                  <div style="display:flex;gap:4px">
+                    <button class="btn" style="font-size:10px;padding:3px 7px" onclick="loginAsTenant('${t.id}')">Login</button>
+                    <button class="btn" style="font-size:10px;padding:3px 7px" onclick="editTenant('${t.id}')">Edit</button>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">VoiceBot feature flags — per tenant (superadmin control)</div>
+        <div class="alert al-info">Only features enabled here will be available to tenant admins to configure.</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Tenant</th>
+              <th>Inbound bot</th>
+              <th>Outbound bot</th>
+              <th>Rasa</th>
+              <th>Chatwoot</th>
+              <th>Dialogflow</th>
+              <th>Watson</th>
+              <th>Lex</th>
+              <th>GPT-4o</th>
+              <th>Custom bot</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${DEMO_TENANTS.map((t, ri) => {
+              const flags = [
+                {k:'inbound',v:true},
+                {k:'outbound',v:ri<2},
+                {k:'rasa',v:ri===0},
+                {k:'chatwoot',v:ri<2},
+                {k:'dialogflow',v:ri===1},
+                {k:'watson',v:ri===1},
+                {k:'lex',v:false},
+                {k:'gpt4o',v:ri<2},
+                {k:'custom',v:true}
+              ];
+              return `
+                <tr>
+                  <td style="font-weight:600">${t.name}</td>
+                  ${flags.map(f => `
+                    <td>
+                      <div style="width:28px;height:16px;border-radius:8px;background:${f.v?'var(--grn)':'var(--bg3)'};border:1px solid ${f.v?'rgba(0,229,160,.3)':'var(--b2)'};position:relative;cursor:pointer;display:inline-block" onclick="toggleFeature(this)">
+                        <div style="position:absolute;width:10px;height:10px;border-radius:50%;background:#fff;top:2px;${f.v?'right:2px':'left:2px'}"></div>
+                      </div>
+                    </td>
+                  `).join('')}
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div id="edit-area"></div>
+    `;
+  }
+  else if (sec==='create') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Create new tenant</div><div class="sec-sub">Isolated environment with own databases</div></div></div>
+      <div class="card" style="max-width:500px">
+        <div class="frow">
+          <div class="fg"><label>Company name</label><input id="nt-name" placeholder="Acme Corp"></div>
+          <div class="fg"><label>Tenant ID</label><input id="nt-id" placeholder="acme_corp"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Admin email</label><input id="nt-email" type="email" placeholder="admin@acme.com"></div>
+          <div class="fg"><label>Admin password</label><input id="nt-pw" type="password" placeholder="Min 8 chars"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Plan</label>
+            <select id="nt-plan">
+              <option>starter</option>
+              <option selected>pro</option>
+              <option>enterprise</option>
+            </select>
+          </div>
+          <div class="fg"><label>PBX type</label>
+            <select id="nt-pbx">
+              <option>asterisk</option>
+              <option>freeswitch</option>
+              <option>kamailio</option>
+              <option>api</option>
+              <option>webhook</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Default LLM</label>
+            <select id="nt-llm">
+              <option value="claude_sonnet">Claude Sonnet 4</option>
+              <option value="claude_haiku">Claude Haiku</option>
+              <option value="gpt4o">GPT-4o</option>
+              <option value="gpt4o_mini">GPT-4o Mini</option>
+              <option value="deepseek">DeepSeek</option>
+              <option value="ibm_wx">IBM Watsonx</option>
+            </select>
+          </div>
+          <div class="fg"><label>Default ASR</label>
+            <select id="nt-asr">
+              <option>whisper</option>
+              <option>deepgram</option>
+              <option>azure</option>
+              <option>google</option>
+              <option>ibm</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Default TTS</label>
+            <select id="nt-tts">
+              <option>azure</option>
+              <option>elevenlabs</option>
+              <option>google</option>
+              <option>espeak</option>
+            </select>
+          </div>
+          <div class="fg"><label>Default translation</label>
+            <select id="nt-trans">
+              <option>deepl</option>
+              <option>azure</option>
+              <option>libretranslate</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow full">
+          <div class="fg"><label>Languages (comma-separated)</label><input id="nt-langs" value="en,hi,es"></div>
+        </div>
+        <div class="frow full">
+          <div class="fg"><label>Markup % over vendor base cost</label><input id="nt-markup" type="number" value="20" style="width:100px"></div>
+        </div>
+        <div style="display:flex;gap:7px;justify-content:flex-end;margin-top:6px">
+          <button class="btn" onclick="saNav('tenants',document.querySelector('#pg-sa .sbi:nth-child(3)'))">Cancel</button>
+          <button class="btn acc" onclick="doCreate()">Create tenant</button>
+        </div>
+        <div id="create-msg" style="margin-top:10px"></div>
+      </div>
+    `;
+  }
+  else if (sec==='greports') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Global reports</div></div></div>
+      <div class="mgrid">
+        ${DEMO_TENANTS.map(t => `
+          <div class="mc" style="cursor:pointer" onclick="loginAsTenant('${t.id}')">
+            <div class="ml">${t.name}</div>
+            <div class="mv c-b">${t.calls.toLocaleString()}</div>
+            <div class="ms">${t.agents} agents • $${t.cost.toFixed(2)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">Calls by hour (Demo Corp)</div>
+        <div class="bar-wrap" id="g-bars"></div>
+        <div class="bar-lbls">${[0,6,12,18,23].map(h => `<span class="bar-lbl">${h}h</span>`).join('')}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Language traffic</div>
+        ${[
+          {l:'en',n:142,c:'#1a8fff'},
+          {l:'hi',n:98,c:'#00e5a0'},
+          {l:'es',n:76,c:'#a855f7'},
+          {l:'ar',n:54,c:'#ff6b35'},
+          {l:'fr',n:38,c:'#fbbf24'}
+        ].map(x => `
+          <div class="lang-row">
+            <span style="font-size:11px;width:24px">${x.l.toUpperCase()}</span>
+            <div class="lb">
+              <div class="lf" style="width:${Math.round(x.n/142*100)}%;background:${x.c}"></div>
+            </div>
+            <span style="font-size:10px;color:var(--mut);min-width:22px;text-align:right">${x.n}</span>
+          </div>
+        `).join('')}
+        </div>
+      </div>
+    `;
+    setTimeout(() => {
+      const v=[8,22,41,68,92,74,61,55,38,24,16,9];
+      const mx=Math.max(...v);
+      const e=document.getElementById('g-bars');
+      if(e) e.innerHTML = v.map(n => `<div class="bar" style="height:${Math.round(n/mx*100)}%"></div>`).join('');
+    }, 30);
+  }
+  else if (sec==='gbilling') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Billing overview</div></div></div>
+      <div class="mgrid">
+        <div class="mc"><div class="ml">Platform total</div><div class="mv c-g">$${totCost.toFixed(2)}</div><div class="ms">this month</div></div>
+        <div class="mc"><div class="ml">Avg per call</div><div class="mv c-b">$${(totCost/totCalls).toFixed(4)}</div></div>
+        <div class="mc"><div class="ml">Highest spend</div><div class="mv c-p">Acme AI</div><div class="ms">$187.44</div></div>
+      </div>
+      <div class="twrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tenant</th>
+              <th>ASR</th>
+              <th>LLM</th>
+              <th>TTS</th>
+              <th>Translation</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${DEMO_TENANTS.map(t => `
+              <tr>
+                <td style="font-weight:600">${t.name}</td>
+                <td class="mono">$${(t.cost*.25).toFixed(2)}</td>
+                <td class="mono">$${(t.cost*.45).toFixed(2)}</td>
+                <td class="mono">$${(t.cost*.15).toFixed(2)}</td>
+                <td class="mono">$${(t.cost*.15).toFixed(2)}</td>
+                <td class="mono" style="color:var(--grn);font-weight:600">$${t.cost.toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  else if (sec==='vendors') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">AI vendor config</div><div class="sec-sub">Default global pricing rates</div></div><button class="btn acc" onclick="alert('Saved!')">Save all</button></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${[
+          ['ASR — $ per minute', [['Whisper (local)','0.0000'], ['Deepgram Nova','0.0043'], ['Azure Speech','0.0100'], ['Google STT','0.0060'], ['IBM Watson','0.0100']]],
+          ['TTS — $ per character', [['Azure Neural','0.000016'], ['ElevenLabs','0.000180'], ['Google WaveNet','0.000016'], ['IBM Watson TTS','0.000020']]],
+          ['LLM — $ per 1k output tokens', [['Claude Sonnet 4','0.01500'], ['Claude Haiku','0.00125'], ['GPT-4o','0.01500'], ['GPT-4o Mini','0.00060'], ['DeepSeek','0.00028'], ['IBM Watsonx','0.00800']]],
+          ['Translation — $ per character', [['DeepL','0.0000050'], ['Azure Translator','0.0000100'], ['Google Translate','0.0000200'], ['LibreTranslate','0.0000000']]]
+        ].map(([title, ...rows]) => `
+          <div class="card">
+            <div class="card-title">${title}</div>
+            ${rows.flat().reduce((a, b, i) => i % 2 === 0 ? [...a, [b]] : [...a.slice(0, -1), [...a[a.length - 1], b]], []).
+              map(([n, r]) => `
+                <div class="price-row">
+                  <span class="pr-name">${n}</span>
+                  <input class="pr-inp btn" value="${r}" style="border:1px solid var(--b2);padding:3px 6px" />
+                </div>
+              `).join('')}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  else if (sec==='audit') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Audit log</div></div></div>
+      <div class="twrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Actor</th>
+              <th>Action</th>
+              <th>Tenant</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[
+              ['09:14','superadmin@techlife.ai','tenant.created','demo_corp','Plan: professional'],
+              ['09:18','admin@democorp.com','user.created','demo_corp','priya@democorp.com (supervisor)'],
+              ['09:32','superadmin@techlife.ai','tenant.created','acme_ai','Plan: enterprise'],
+              ['10:01','ahmed@acme.ai','pbx.updated','acme_ai','FreeSWITCH 192.168.1.10'],
+              ['10:22','admin@democorp.com','pricing.updated','demo_corp','Markup 20% set'],
+              ['10:45','superadmin@techlife.ai','tenant.created','global_bpo','Plan: starter'],
+              ['11:02','suresh@globalbpo.com','webhook.added','global_bpo','Zapier endpoint']
+            ].map(([t,actor,action,tenant,detail]) => `
+              <tr>
+                <td class="mono" style="color:var(--mut)">${t}</td>
+                <td class="mono" style="font-size:10px;overflow:hidden;text-overflow:ellipsis;max-width:120px">${actor}</td>
+                <td><code>${action}</code></td>
+                <td class="mono">${tenant}</td>
+                <td style="font-size:11px;color:var(--mut)">${detail}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+}
+
+// --- Additional functions for tenant actions (login, edit, create, etc.) ---
+function loginAsTenant(tid) {
+  const t=DEMO_TENANTS.find(x=>x.id===tid); if (!t) return;
+  curUser={email:t.name+' Admin',role:'admin',name:t.name+' Admin',tenant_id:tid};
+  curTenant=t;
+  document.getElementById('pg-sa').classList.remove('on');
+  document.getElementById('pg-tenant').classList.add('on');
+  const rb=document.getElementById('role-badge');
+  rb.textContent='ADMIN'; rb.className='tb-badge tb-badge-admin';
+  document.getElementById('user-lbl').textContent=t.name+' — Admin';
+  buildTSB();
+  document.querySelectorAll('#pg-tenant .sbi').forEach(b=>b.classList.remove('on'));
+  document.querySelector('#pg-tenant .sbi').classList.add('on');
+  tRender('dashboard');
+}
+
+function editTenant(tid) {
+  const t=DEMO_TENANTS.find(x=>x.id===tid); if (!t) return;
+  openModal(`<div class="modal-title">Edit tenant — ${t.name}</div>
+    <div class="fg"><label>Plan</label><select id="et-plan"><option ${t.plan==='starter'?'selected':''}>starter</option><option ${t.plan==='pro'?'selected':''}>pro</option><option ${t.plan==='enterprise'?'selected':''}>enterprise</option></select></div>
+    <div class="fg"><label>Status</label><select id="et-status"><option ${t.status==='active'?'selected':''}>active</option><option ${t.status==='suspended'?'selected':''}>suspended</option></select></div>
+    <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="saveTenantEdit('${tid}')">Save</button></div>`);
+}
+function saveTenantEdit(tid) {
+  const t=DEMO_TENANTS.find(x=>x.id===tid); if (t) {
+    t.plan=document.getElementById('et-plan').value;
+    t.status=document.getElementById('et-status').value;
+  }
+  closeModal();
+  saRender('tenants');
+}
+
+function doCreate() {
+  const n=document.getElementById('nt-name').value;
+  const id=document.getElementById('nt-id').value;
+  const em=document.getElementById('nt-email').value;
+  if (!n || !id || !em) {
+    document.getElementById('create-msg').innerHTML='<div class="alert al-warn">Fill name, ID, and email.</div>';
+    return;
+  }
+  DEMO_TENANTS.push({id, name:n, plan:document.getElementById('nt-plan').value, status:'active', calls:0, agents:0, cost:0, langs:document.getElementById('nt-langs').value.split(',').map(s=>s.trim()), llm:document.getElementById('nt-llm').value, asr:document.getElementById('nt-asr').value, tts:document.getElementById('nt-tts').value, trans:document.getElementById('nt-trans').value, pbx:document.getElementById('nt-pbx').value});
+  DEMO_USERS[id]=[]; DEMO_WH[id]=[];
+  document.getElementById('create-msg').innerHTML=`<div class="alert al-ok">? Tenant <b>${n}</b> created. ID: <code>${id}</code></div>`;
+  // Create via API if available
+  fetch(API_BASE+'/api/superadmin/tenants', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, name:n, plan:document.getElementById('nt-plan').value, email:em, admin_email:em, admin_password:document.getElementById('nt-pw').value})}).catch(()=>{});
+}
+
+function showAddUser() {
+  document.getElementById('user-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-title">Add user / agent</div>
+    <div class="frow"><div class="fg"><label>Name</label><input id="nu-name" placeholder="Jane Smith"></div><div class="fg"><label>Email</label><input id="nu-email" type="email"></div></div>
+    <div class="frow"><div class="fg"><label>Role</label><select id="nu-role"><option>agent</option><option>supervisor</option><option>admin</option></select></div><div class="fg"><label>Extension</label><input id="nu-ext" placeholder="1005"></div></div>
+    <div class="frow full"><div class="fg"><label>Password</label><input type="password" id="nu-pw" placeholder="Min 8 chars"></div></div>
+    <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddUser()">Create</button></div>
+  </div></div>`;
+}
+function doAddUser() {
+  const n=document.getElementById('nu-name').value;
+  const em=document.getElementById('nu-email').value;
+  if (!n || !em) { alert('Fill name and email'); return; }
+  const tid=curTenant?.id;
+  if (!tid) return;
+  (DEMO_USERS[tid]=DEMO_USERS[tid]||[]).push({id:'u'+Date.now(),name:n,email:em,role:document.getElementById('nu-role').value,status:'offline', exten:document.getElementById('nu-ext').value||'1099',langs:['en']});
+  document.getElementById('user-modal').innerHTML='';
+  tRender('users');
+  fetch(`${API_BASE}/api/tenant/${tid}/users`, {method:'POST', headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})}, body:JSON.stringify({name:n,email:em,password:document.getElementById('nu-pw')?.value||'Agent@1234',role:document.getElementById('nu-role').value, exten:document.getElementById('nu-ext').value})}).catch(()=>{});
+}
+
+function showAddWH() {
+  document.getElementById('wh-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-title">Add outbound webhook</div>
+    <div class="frow full"><div class="fg"><label>Name</label><input id="whn" placeholder="My CRM webhook"></div></div>
+    <div class="frow full"><div class="fg"><label>URL</label><input id="whu" placeholder="https://hooks.zapier.com/..."></div></div>
+    <div class="frow full"><div class="fg"><label>Events (comma-separated)</label><input id="whe" value="call.ended,cdr,csat"></div></div>
+    <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddWH()">Add</button></div>
+  </div></div>`;
+}
+function doAddWH() {
+  const n=document.getElementById('whn').value;
+  const u=document.getElementById('whu').value;
+  if (!n || !u) { alert('Fill name and URL'); return; }
+  const tid=curTenant?.id;
+  if (!tid) return;
+  (DEMO_WH[tid]=DEMO_WH[tid]||[]).push({id:'wh'+Date.now(), name:n, url:u, events:document.getElementById('whe').value, enabled:true});
+  document.getElementById('wh-modal').innerHTML='';
+  tRender('webhooks');
+  fetch(`${API_BASE}/api/tenant/${tid}/webhooks`, {method:'POST', headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})}, body:JSON.stringify({name:n, url:u, events:document.getElementById('whe')?.value.split(',')})}).catch(()=>{});
+}
+
+function showAddBot() {
+  document.getElementById('bot-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-title">Add VoiceBot agent</div>
+    <div class="frow"><div class="fg"><label>Name</label><input id="nb-name" placeholder="Support VoiceBot"></div><div class="fg"><label>Extension</label><input id="nb-ext" placeholder="9000"></div></div>
+    <div class="frow"><div class="fg"><label>Bot type</label>
+      <select id="nb-type">
+        <option value="claude">Claude AI (built-in)</option>
+        <option value="rasa">Rasa</option>
+        <option value="chatwoot">Chatwoot</option>
+        <option value="dialogflow">Dialogflow CX</option>
+        <option value="watson">IBM Watson Assistant</option>
+        <option value="lex">Amazon Lex v2</option>
+        <option value="botframework">Microsoft Bot Framework</option>
+        <option value="gpt4o">GPT-4o (function calling)</option>
+        <option value="custom">Custom HTTP bot</option>
+      </select></div>
+    </div>
+    <div class="frow"><div class="fg"><label>Direction</label>
+      <select id="nb-dir"><option value="inbound">Inbound only</option><option value="outbound">Outbound only</option><option value="both">Both</option></select></div>
+    </div>
+    <div class="frow full"><div class="fg"><label>Escalation: max turns before handoff</label><input type="number" id="nb-maxturns" value="8" style="width:80px"></div></div>
+    <div class="frow full"><div class="fg"><label>Greeting message</label><input id="nb-greet" value="Hello! I am VoiceBot. How can I help you today?"></div></div>
+    <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddBot()">Create bot</button></div>
+  </div></div>`;
+}
+
+function doAddBot() {
+  const name = document.getElementById('nb-name').value;
+  const ext = document.getElementById('nb-ext').value;
+  const type = document.getElementById('nb-type').value;
+  const dir = document.getElementById('nb-dir').value;
+  if (!name) { alert('Enter a name'); return; }
+  const tid = curTenant?.id;
+  if (!tid) return;
+  fetch(`${API_BASE}/api/tenant/${tid}/bot/agents`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
+    body:JSON.stringify({name, extension:ext, bot_type:type, direction:dir, escalation:{max_turns:parseInt(document.getElementById('nb-maxturns').value)||8}, config:{greeting:document.getElementById('nb-greet').value}})
+  }).catch(()=>{});
+  closeModal();
+  alert('Bot agent "'+name+'" created successfully!');
+}
+
+function showAddCampaign() {
+  document.getElementById('camp-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+    <div class="modal-title">New outbound campaign</div>
+    <div class="frow"><div class="fg"><label>Campaign name</label><input id="nc-name" placeholder="Appointment reminders"></div><div class="fg"><label>Bot type</label>
+      <select id="nc-bot"><option value="claude">Claude AI</option><option value="rasa">Rasa</option><option value="chatwoot">Chatwoot</option><option value="gpt4o">GPT-4o</option><option value="custom">Custom HTTP</option></select></div></div>
+    <div class="frow"><div class="fg"><label>Caller ID</label><input id="nc-cid" placeholder="+1 800 555 0100"></div><div class="fg"><label>Schedule at</label><input id="nc-sched" type="datetime-local"></div></div>
+    <div class="frow full"><div class="fg"><label>Greeting script</label><input id="nc-script" value="Hello {name}, this is VoiceBot from {company}. I'm calling about your upcoming appointment."></div></div>
+    <div class="frow"><div class="fg"><label>Max retries</label><input type="number" id="nc-retry" value="3" style="width:70px"></div><div class="fg"><label>AMD (voicemail detection)</label><select><option>Enabled</option><option>Disabled</option></select></div></div>
+    <div class="frow full"><div class="fg"><label>Contacts (JSON array or paste CSV)</label><textarea style="width:100%;height:70px;font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--b2);color:var(--txt);padding:6px;border-radius:5px" id="nc-contacts" placeholder='[{"name":"John","phone":"+1234567890"},{"name":"Jane","phone":"+0987654321"}]'></textarea></div></div>
+    <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddCampaign()">Create campaign</button></div>
+  </div></div>`;
+}
+
+function doAddCampaign() {
+  const name=document.getElementById('nc-name').value;
+  if (!name) { alert('Enter campaign name'); return; }
+  let contacts = [];
+  try { contacts= JSON.parse(document.getElementById('nc-contacts').value||'[]'); } catch {}
+  const tid=curTenant?.id;
+  fetch(`${API_BASE}/api/tenant/${tid}/bot/campaigns`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})},
+    body:JSON.stringify({name, bot_type:document.getElementById('nc-bot').value, caller_id:document.getElementById('nc-cid').value, schedule_at:document.getElementById('nc-sched').value, script:{greeting:document.getElementById('nc-script').value}, max_retries:parseInt(document.getElementById('nc-retry').value)||3, contacts})
+  }).catch(()=>{});
+  closeModal();
+  alert('Campaign "'+name+'" created with '+contacts.length+' contacts!');
+}
+
+function toggleFeature(el) {
+  const isOn = el.style.background.includes('grn') || el.style.background === 'var(--grn)';
+  el.style.background = isOn ? 'var(--bg3)' : 'var(--grn)';
+  el.style.borderColor = isOn ? 'var(--b2)' : 'rgba(0,229,160,.3)';
+  const dot = el.querySelector('div');
+  if (dot) {
+    dot.style.right = isOn ? '' : '2px';
+    dot.style.left = isOn ? '2px' : '';
+  }
+}
+
+function openModal(html) {
+  document.getElementById('modal-box').innerHTML=html;
+  document.getElementById('modal-wrap').classList.add('on');
+}
+function closeModal() {
+  document.getElementById('modal-wrap').classList.remove('on');
+}
+
+// Auto-login from storage
+try {
+  const u=sessionStorage.getItem('vb_user');
+  const t=sessionStorage.getItem('vb_token');
+  const tn=sessionStorage.getItem('vb_tenant');
+  if (u) {
+    curUser=JSON.parse(u);
+    token=t;
+    if (tn) curTenant=DEMO_TENANTS.find(x=>x.id===tn) || null;
+    afterLogin(curUser.role==='superadmin'?'sa':'tenant');
+  }
+} catch {}
+</script>
+</body>
+</html>
