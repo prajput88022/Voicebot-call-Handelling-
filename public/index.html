@@ -1104,6 +1104,13 @@ function saRender(sec) {
       <div class="sec-hdr"><div><div class="sec-title">Tenant management</div></div>
         <div class="btn-row"><button class="btn acc" onclick="saNav('create',document.querySelector('#pg-sa .sbi:nth-child(3)'))">+ New tenant</button></div>
       </div>
+      <div class="card" style="max-width:520px">
+        <div class="card-title">Manage a tenant by ID</div>
+        <div style="font-size:12px;color:var(--mut);margin-bottom:8px">Jump into any real tenant you created (not just the demo ones below) to add its users, bot agents, webhooks, etc. on its behalf — using your own Super Admin login.</div>
+        <div class="frow full"><div class="fg"><input id="mng-tid" placeholder="Tenant ID, e.g. 6fc5e746e8764da4"></div></div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn acc" onclick="manageTenantById()">Manage this tenant</button></div>
+        <div class="lerr" id="mng-err"></div>
+      </div>
       <div class="twrap">
         <table>
           <thead>
@@ -1138,6 +1145,7 @@ function saRender(sec) {
             `).join('')}
           </tbody>
         </table>
+        <div class="alert al-info" style="margin:10px">This table shows 3 example tenants for demo purposes. Tenants you actually create appear only via "Manage a tenant by ID" above (or the API) until this table is wired to live data.</div>
       </div>
       <div class="card">
         <div class="card-title">VoiceBot feature flags — per tenant (superadmin control)</div>
@@ -1691,6 +1699,32 @@ function tRender(sec) {
         <div class="alert al-info" style="margin-top:10px">Feature availability is controlled by your Super Admin. Contact them to enable additional bot engines.</div>
       </div>
     `;
+  }
+}
+
+async function manageTenantById() {
+  const tid = document.getElementById('mng-tid').value.trim();
+  const errEl = document.getElementById('mng-err');
+  errEl.textContent = '';
+  if (!tid) { errEl.textContent = 'Enter a Tenant ID'; return; }
+  try {
+    const r = await fetch(`${API_BASE}/api/superadmin/tenants/${encodeURIComponent(tid)}`, { headers: token ? {'Authorization':'Bearer '+token} : {} });
+    const d = await r.json();
+    if (!r.ok || !d || d.error) { errEl.textContent = (d && d.error) || 'Tenant not found'; return; }
+    const realTenant = { ...d, id: d.id || d._id, pbx: (d.pbx && typeof d.pbx === 'object') ? (d.pbx.type || '-') : (d.pbx || '-') };
+    curTenant = { agents:0, calls:0, cost:0, pbx:'-', status:'active', ...realTenant };
+    curUser = { email: curUser.email, role: 'superadmin', name: curUser.name, tenant_id: tid, acting_as_superadmin: true };
+    document.getElementById('pg-sa').classList.remove('on');
+    document.getElementById('pg-tenant').classList.add('on');
+    const rb = document.getElementById('role-badge');
+    rb.textContent = 'SUPER ADMIN (managing tenant)'; rb.className = 'tb-badge tb-badge-sa';
+    document.getElementById('user-lbl').textContent = curTenant.name + ' — managed by ' + (curUser.email || 'Super Admin');
+    buildTSB();
+    document.querySelectorAll('#pg-tenant .sbi').forEach(b => b.classList.remove('on'));
+    document.querySelector('#pg-tenant .sbi').classList.add('on');
+    tRender('dashboard');
+  } catch (e) {
+    errEl.textContent = 'Could not reach the API server at ' + API_BASE;
   }
 }
 
