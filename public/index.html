@@ -773,9 +773,9 @@ code {
     </div>
     <div id="lc-sa">
       <div class="lcard">
-        <div class="licon licon-sa">??</div>
+        <div class="licon licon-sa">SA</div>
         <div class="ltitle">Super Admin Portal</div>
-        <div class="lsub">Full platform control � all tenants</div>
+        <div class="lsub">Full platform control — all tenants</div>
         <div class="fg"><label>Email</label><input id="sa-em" type="email" value="superadmin@techlife.ai"></div>
         <div class="fg"><label>Password</label><input id="sa-pw" type="password" value="SuperAdmin@2024" onkeydown="if(event.key==='Enter')doLogin('sa')"></div>
         <button class="btn-lg" onclick="doLogin('sa')">Sign in as Super Admin</button>
@@ -785,24 +785,17 @@ code {
     </div>
     <div id="lc-t" style="display:none">
       <div class="lcard">
-        <div class="licon licon-t">??</div>
+        <div class="licon licon-t">T</div>
         <div class="ltitle">Tenant Login</div>
         <div class="lsub">Sign in to your organisation</div>
         <div class="fg"><label>Tenant ID</label>
-          <select id="t-sel">
-            <option value="demo_corp">Demo Corp</option>
-            <option value="acme_ai">Acme AI Solutions</option>
-            <option value="global_bpo">Global BPO Ltd</option>
-          </select>
+          <input id="t-sel" placeholder="e.g. 6fc5e746e8764da4">
         </div>
-        <div class="fg"><label>Email</label><input id="t-em" value="admin@democorp.com"></div>
-        <div class="fg"><label>Role</label>
-          <select id="t-role"><option value="admin">Admin</option><option value="supervisor">Supervisor</option><option value="agent">Agent</option></select>
-        </div>
-        <div class="fg"><label>Password</label><input id="t-pw" type="password" value="Admin@1234" onkeydown="if(event.key==='Enter')doLogin('tenant')"></div>
+        <div class="fg"><label>Email</label><input id="t-em" placeholder="you@company.com"></div>
+        <div class="fg"><label>Password</label><input id="t-pw" type="password" onkeydown="if(event.key==='Enter')doLogin('tenant')"></div>
         <button class="btn-lg g" onclick="doLogin('tenant')">Sign in to Tenant</button>
         <div class="lerr" id="t-err"></div>
-        <div class="lhint"><b>Admin:</b> admin@democorp.com / Admin@1234<br><b>Agent:</b> agent@democorp.com / Agent@1234</div>
+        <div class="lhint">Your Tenant ID and login were provided when your organisation's account was created. Ask your Super Admin if you don't have them.</div>
       </div>
     </div>
   </div></div>
@@ -814,15 +807,15 @@ code {
     <div class="sb">
       <div class="sb-hdr"><div class="sb-hdr-name">Super Admin</div><div class="sb-hdr-sub">Full platform control</div></div>
       <div class="sbs">Platform</div>
-      <button class="sbi on" onclick="saNav('overview',this)">?? Overview</button>
-      <button class="sbi" onclick="saNav('tenants',this)">?? Tenants</button>
-      <button class="sbi" onclick="saNav('create',this)">? New tenant</button>
+      <button class="sbi on" onclick="saNav('overview',this)">Overview</button>
+      <button class="sbi" onclick="saNav('tenants',this)">Tenants</button>
+      <button class="sbi" onclick="saNav('create',this)">New tenant</button>
       <div class="sbs">Reports</div>
-      <button class="sbi" onclick="saNav('greports',this)">?? Global reports</button>
-      <button class="sbi" onclick="saNav('gbilling',this)">?? Billing overview</button>
+      <button class="sbi" onclick="saNav('greports',this)">Global reports</button>
+      <button class="sbi" onclick="saNav('gbilling',this)">Billing overview</button>
       <div class="sbs">Config</div>
-      <button class="sbi" onclick="saNav('vendors',this)">?? AI vendors</button>
-      <button class="sbi" onclick="saNav('audit',this)">?? Audit log</button>
+      <button class="sbi" onclick="saNav('vendors',this)">AI vendors</button>
+      <button class="sbi" onclick="saNav('audit',this)">Audit log</button>
     </div>
     <div class="main" id="sa-main"></div>
   </div>
@@ -834,25 +827,25 @@ code {
     <div class="sb" id="t-sb">
       <div class="sb-hdr" id="t-sb-hdr"></div>
       <div class="sbs">Overview</div>
-      <button class="sbi on" onclick="tNav('dashboard',this)">?? Dashboard</button>
-      <button class="sbi" onclick="tNav('calls',this)">?? Live calls</button>
+      <button class="sbi on" onclick="tNav('dashboard',this)">Dashboard</button>
+      <button class="sbi" onclick="tNav('calls',this)">Live calls</button>
       <div class="sbs">Reports</div>
-      <button class="sbi" onclick="tNav('cdr',this)">?? CDR</button>
-      <button class="sbi" onclick="tNav('acd',this)">?? ACD report</button>
-      <button class="sbi" onclick="tNav('csat',this)">?? CSAT</button>
-      <button class="sbi" onclick="tNav('queue',this)">?? Queue</button>
-      <button class="sbi" onclick="tNav('agents-rpt',this)">?? Agent report</button>
-      <button class="sbi" onclick="tNav('billing',this)">?? Billing</button>
+      <button class="sbi" onclick="tNav('cdr',this)">CDR</button>
+      <button class="sbi" onclick="tNav('acd',this)">ACD report</button>
+      <button class="sbi" onclick="tNav('csat',this)">CSAT</button>
+      <button class="sbi" onclick="tNav('queue',this)">Queue</button>
+      <button class="sbi" onclick="tNav('agents-rpt',this)">Agent report</button>
+      <button class="sbi" onclick="tNav('billing',this)">Billing</button>
       <div class="sbs">VoiceBot</div>
-      <button class="sbi" onclick="tNav('bots',this)">?? Bot agents</button>
-      <button class="sbi" onclick="tNav('campaigns',this)">?? Outbound</button>
+      <button class="sbi" onclick="tNav('bots',this)">Bot agents</button>
+      <button class="sbi" onclick="tNav('campaigns',this)">Outbound</button>
       <div class="sbs admin-only" style="display:none">Admin</div>
-      <button class="sbi admin-only" style="display:none" onclick="tNav('users',this)">?? Users</button>
-      <button class="sbi admin-only" style="display:none" onclick="tNav('pricing',this)">?? Pricing</button>
-      <button class="sbi admin-only" style="display:none" onclick="tNav('pbx',this)">?? PBX config</button>
-      <button class="sbi admin-only" style="display:none" onclick="tNav('webhooks',this)">?? Webhooks</button>
-      <button class="sbi admin-only" style="display:none" onclick="tNav('crm',this)">?? CRM</button>
-      <button class="sbi admin-only" style="display:none" onclick="tNav('botconfig',this)">?? Bot config</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('users',this)">Users</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('pricing',this)">Pricing</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('pbx',this)">PBX config</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('webhooks',this)">Webhooks</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('crm',this)">CRM</button>
+      <button class="sbi admin-only" style="display:none" onclick="tNav('botconfig',this)">Bot config</button>
       <div class="sb-footer" id="t-sb-footer"></div>
     </div>
     <div class="main" id="t-main"></div>
@@ -927,54 +920,55 @@ async function doLogin(type) {
   if (type==='sa') {
     const em=document.getElementById('sa-em').value;
     const pw=document.getElementById('sa-pw').value;
-    if (!em || !pw) {
-      document.getElementById('sa-err').textContent='Fill all fields';
-      return;
-    }
-    // Try real API first, fall back to demo
+    const errEl = document.getElementById('sa-err');
+    errEl.textContent='';
+    if (!em || !pw) { errEl.textContent='Fill all fields'; return; }
     try {
-      const r= await fetch(API_BASE+'/api/superadmin/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:em, password:pw})});
-      const d= await r.json();
-      if (d.token) {
-        token = d.token;
-        curUser = {email: em, role:'superadmin', name:'Super Admin'};
-        afterLogin('sa');
-        return;
-      }
-    } catch {}
-    // Demo mode
-    if (em==='superadmin@techlife.ai' && pw==='SuperAdmin@2024') {
-      curUser={email: em, role:'superadmin', name:'Super Admin'};
+      const r = await fetch(API_BASE+'/api/superadmin/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:em, password:pw})});
+      const d = await r.json();
+      if (!r.ok || !d.token) { errEl.textContent = d.error || 'Invalid credentials'; return; }
+      token = d.token;
+      curUser = {email: em, role:'superadmin', name: d.name || 'Super Admin'};
+      curTenant = null;
+      saveSession();
       afterLogin('sa');
-    } else {
-      document.getElementById('sa-err').textContent='Invalid credentials';
+    } catch (e) {
+      errEl.textContent = 'Could not reach the API server at '+API_BASE+'. Is it running?';
     }
   } else {
-    const tid=document.getElementById('t-sel').value;
+    const tid=document.getElementById('t-sel').value.trim();
     const em=document.getElementById('t-em').value;
     const pw=document.getElementById('t-pw').value;
-    const role=document.getElementById('t-role').value;
-    const t=DEMO_TENANTS.find(x=>x.id===tid);
-    if (!t) {
-      document.getElementById('t-err').textContent='Tenant not found';
-      return;
-    }
+    const errEl = document.getElementById('t-err');
+    errEl.textContent='';
+    if (!tid || !em || !pw) { errEl.textContent='Fill all fields, including your Tenant ID'; return; }
     try {
-      const r= await fetch(`${API_BASE}/api/tenant/${tid}/login`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:em, password:pw})});
-      const d= await r.json();
-      if (d.token) {
-        token=d.token;
-        curUser={email: em, role: d.user.role, name: d.user.name, tenant_id: tid};
-        curTenant = t;
-        afterLogin('tenant');
-        return;
-      }
-    } catch {}
-    // Demo mode
-    curUser={email: em, role: role || 'agent', name: em.split('@')[0], tenant_id: tid};
-    curTenant = t;
-    afterLogin('tenant');
+      const r = await fetch(`${API_BASE}/api/tenant/${encodeURIComponent(tid)}/login`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:em, password:pw})});
+      const d = await r.json();
+      if (!r.ok || !d.token) { errEl.textContent = d.error || 'Invalid credentials'; return; }
+      token = d.token;
+      curUser = {email: em, role: d.user.role, name: d.user.name, tenant_id: tid};
+      // Merge the real tenant record with zeroed defaults for fields the rest
+      // of this demo UI displays (live call counts, agent counts, cost) but
+      // that the backend doesn't return at login time.
+      curTenant = { agents:0, calls:0, cost:0, pbx:'-', status:'active', ...d.tenant };
+      saveSession();
+      afterLogin('tenant');
+    } catch (e) {
+      errEl.textContent = 'Could not reach the API server at '+API_BASE+'. Is it running?';
+    }
   }
+}
+
+function saveSession() {
+  try {
+    sessionStorage.setItem('vb_user', JSON.stringify(curUser));
+    sessionStorage.setItem('vb_token', token || '');
+    sessionStorage.setItem('vb_tenant', curTenant ? JSON.stringify(curTenant) : '');
+  } catch {}
+}
+function clearSession() {
+  try { sessionStorage.removeItem('vb_user'); sessionStorage.removeItem('vb_token'); sessionStorage.removeItem('vb_tenant'); } catch {}
 }
 
 function afterLogin(mode) {
@@ -984,7 +978,7 @@ function afterLogin(mode) {
   const r=curUser.role;
   rb.textContent=r==='superadmin'?'SUPER ADMIN': r==='admin'?'ADMIN': 'AGENT';
   rb.className='tb-badge tb-badge-'+(r==='superadmin'?'sa':r==='admin'?'admin':'agent');
-  document.getElementById('user-lbl').textContent=curUser.name + (curTenant ? ' � '+curTenant.name:'');
+  document.getElementById('user-lbl').textContent=curUser.name + (curTenant ? ' — '+curTenant.name:'');
   if (mode==='sa') {
     document.getElementById('pg-sa').classList.add('on');
     saRender('overview');
@@ -997,6 +991,7 @@ function afterLogin(mode) {
 
 function logout() {
   curUser=null; curTenant=null; token=null;
+  clearSession();
   document.getElementById('topbar').style.display='none';
   document.getElementById('pg-sa').classList.remove('on');
   document.getElementById('pg-tenant').classList.remove('on');
@@ -1008,7 +1003,7 @@ function buildTSB() {
   const t=curTenant;
   const avC=[['rgba(26,143,255,.15)', '#1a8fff'], ['rgba(0,229,160,.12)', '#00e5a0'], ['rgba(168,85,247,.12)', '#a855f7']];
   const index = DEMO_TENANTS.findIndex(x => x.id===t.id);
-  const [bg, fg] = avC[index % 3];
+  const [bg, fg] = avC[index >= 0 ? index % 3 : 0];
   const el1003 = document.getElementById('t-sb-hdr');
   if (el1003) el1003.innerHTML=`
     <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
@@ -1048,7 +1043,7 @@ function saRender(sec) {
   const totCost = DEMO_TENANTS.reduce((s,t) => s+t.cost, 0);
   if (sec==='overview') {
     el.innerHTML = `
-      <div class="sec-hdr"><div><div class="sec-title">Platform overview</div><div class="sec-sub">All tenants � live</div></div></div>
+      <div class="sec-hdr"><div><div class="sec-title">Platform overview</div><div class="sec-sub">All tenants — live</div></div></div>
       <div class="mgrid">
         <div class="mc"><div class="ml">Total tenants</div><div class="mv c-b">${DEMO_TENANTS.length}</div><div class="ms">all active</div></div>
         <div class="mc"><div class="ml">Active calls</div><div class="mv c-g">${LIVE.length}</div><div class="ms">live now</div></div>
@@ -1068,7 +1063,7 @@ function saRender(sec) {
                 <span class="pill p-active">active</span>
                 <span class="pill p-${t.plan==='pro'?'pro':t.plan==='enterprise'?'ent':'starter'}">${t.plan}</span>
               </div>
-              <div style="font-size:10px;color:var(--mut);margin-top:6px">${t.calls.toLocaleString()} calls � $${t.cost.toFixed(2)}</div>
+              <div style="font-size:10px;color:var(--mut);margin-top:6px">${t.calls.toLocaleString()} calls • $${t.cost.toFixed(2)}</div>
             </div>
           `;
         }).join('')}
@@ -1145,7 +1140,7 @@ function saRender(sec) {
         </table>
       </div>
       <div class="card">
-        <div class="card-title">VoiceBot feature flags � per tenant (superadmin control)</div>
+        <div class="card-title">VoiceBot feature flags — per tenant (superadmin control)</div>
         <div class="alert al-info">Only features enabled here will be available to tenant admins to configure.</div>
         <table>
           <thead>
@@ -1284,7 +1279,7 @@ function saRender(sec) {
           <div class="mc" style="cursor:pointer" onclick="loginAsTenant('${t.id}')">
             <div class="ml">${t.name}</div>
             <div class="mv c-b">${t.calls.toLocaleString()}</div>
-            <div class="ms">${t.agents} agents � $${t.cost.toFixed(2)}</div>
+            <div class="ms">${t.agents} agents • $${t.cost.toFixed(2)}</div>
           </div>
         `).join('')}
       </div>
@@ -1361,10 +1356,10 @@ function saRender(sec) {
       <div class="sec-hdr"><div><div class="sec-title">AI vendor config</div><div class="sec-sub">Default global pricing rates</div></div><button class="btn acc" onclick="alert('Saved!')">Save all</button></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         ${[
-          ['ASR � $ per minute', [['Whisper (local)','0.0000'], ['Deepgram Nova','0.0043'], ['Azure Speech','0.0100'], ['Google STT','0.0060'], ['IBM Watson','0.0100']]],
-          ['TTS � $ per character', [['Azure Neural','0.000016'], ['ElevenLabs','0.000180'], ['Google WaveNet','0.000016'], ['IBM Watson TTS','0.000020']]],
-          ['LLM � $ per 1k output tokens', [['Claude Sonnet 4','0.01500'], ['Claude Haiku','0.00125'], ['GPT-4o','0.01500'], ['GPT-4o Mini','0.00060'], ['DeepSeek','0.00028'], ['IBM Watsonx','0.00800']]],
-          ['Translation � $ per character', [['DeepL','0.0000050'], ['Azure Translator','0.0000100'], ['Google Translate','0.0000200'], ['LibreTranslate','0.0000000']]]
+          ['ASR — $ per minute', [['Whisper (local)','0.0000'], ['Deepgram Nova','0.0043'], ['Azure Speech','0.0100'], ['Google STT','0.0060'], ['IBM Watson','0.0100']]],
+          ['TTS — $ per character', [['Azure Neural','0.000016'], ['ElevenLabs','0.000180'], ['Google WaveNet','0.000016'], ['IBM Watson TTS','0.000020']]],
+          ['LLM — $ per 1k output tokens', [['Claude Sonnet 4','0.01500'], ['Claude Haiku','0.00125'], ['GPT-4o','0.01500'], ['GPT-4o Mini','0.00060'], ['DeepSeek','0.00028'], ['IBM Watsonx','0.00800']]],
+          ['Translation — $ per character', [['DeepL','0.0000050'], ['Azure Translator','0.0000100'], ['Google Translate','0.0000200'], ['LibreTranslate','0.0000000']]]
         ].map(([title, ...rows]) => `
           <div class="card">
             <div class="card-title">${title}</div>
@@ -1420,6 +1415,285 @@ function saRender(sec) {
 }
 
 // --- Additional functions for tenant actions (login, edit, create, etc.) ---
+
+function tNav(sec, el) {
+  document.querySelectorAll('#pg-tenant .sbi').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  tCur = sec;
+  tRender(sec);
+}
+
+function tRender(sec) {
+  const el = document.getElementById('t-main');
+  const t = curTenant || {};
+  const tid = t.id;
+  const users = DEMO_USERS[tid] || [];
+  const webhooks = DEMO_WH[tid] || [];
+  const calls = LIVE.filter(c => c.tenant === tid);
+  const isAdmin = ['admin','superadmin'].includes((curUser||{}).role);
+
+  if (sec === 'dashboard') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">${t.name || 'Dashboard'}</div><div class="sec-sub">Live overview</div></div></div>
+      <div class="mgrid">
+        <div class="mc"><div class="ml">Live calls</div><div class="mv c-b">${calls.length}</div><div class="ms">right now</div></div>
+        <div class="mc"><div class="ml">Total calls</div><div class="mv c-g">${(t.calls||0).toLocaleString()}</div><div class="ms">all time</div></div>
+        <div class="mc"><div class="ml">Agents</div><div class="mv c-p">${t.agents ?? users.length}</div><div class="ms">${users.filter(u=>u.status==='online').length} online</div></div>
+        <div class="mc"><div class="ml">AI cost</div><div class="mv c-b">$${(t.cost||0).toFixed(2)}</div><div class="ms">this month</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Live calls</div>
+        ${calls.length ? `
+        <table>
+          <thead><tr><th>Call</th><th>Caller</th><th>Lang</th><th>PBX</th><th>Duration</th><th>Transcript</th></tr></thead>
+          <tbody>
+            ${calls.map(c => `
+              <tr>
+                <td class="mono">${c.id}</td>
+                <td>${c.caller}</td>
+                <td>${LANG_N[c.lang]||c.lang}</td>
+                <td>${c.pbx}</td>
+                <td>${c.dur}s</td>
+                <td style="font-size:11px;color:var(--mut)">${c.translated}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>` : `<div class="alert al-info">No live calls right now.</div>`}
+      </div>
+    `;
+  }
+  else if (sec === 'calls') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Live calls</div><div class="sec-sub">Real-time transcript & AI replies</div></div></div>
+      ${calls.length ? calls.map(c => `
+        <div class="card">
+          <div class="card-title">${c.id} — ${c.caller} (${LANG_N[c.lang]||c.lang}, ${c.pbx})</div>
+          <div style="font-size:12px;color:var(--mut);margin-bottom:4px">Caller: ${c.transcript}</div>
+          <div style="font-size:12px;color:var(--txt);margin-bottom:4px">Translated: ${c.translated}</div>
+          <div style="font-size:12px;color:var(--grn)">AI reply: ${c.ai_reply}</div>
+          <div style="font-size:11px;color:var(--mut);margin-top:6px">ASR ${c.asr_ms}ms · AI ${c.ai_ms}ms · Total ${c.total_ms}ms · ${c.dur}s elapsed</div>
+        </div>
+      `).join('') : `<div class="alert al-info">No live calls right now. New calls will appear here in real time.</div>`}
+    `;
+  }
+  else if (sec === 'cdr') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Call Detail Records</div><div class="sec-sub">Completed call history</div></div></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Call ID</th><th>Caller</th><th>Agent/Bot</th><th>Duration</th><th>Lang</th><th>Status</th></tr></thead>
+          <tbody>
+            ${users.length ? users.map((u,i) => `
+              <tr>
+                <td class="mono">c${1000+i}</td>
+                <td>+1 555 01${10+i}</td>
+                <td>${u.name}</td>
+                <td>${60+i*37}s</td>
+                <td>${(u.langs&&u.langs[0])||'en'}</td>
+                <td><span class="pill p-active">completed</span></td>
+              </tr>
+            `).join('') : `<tr><td colspan="6" style="color:var(--mut)">No completed calls yet.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  else if (sec === 'acd') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">ACD report</div><div class="sec-sub">Automatic call distribution</div></div></div>
+      <div class="mgrid">
+        <div class="mc"><div class="ml">Avg wait time</div><div class="mv c-b">8s</div></div>
+        <div class="mc"><div class="ml">Avg handle time</div><div class="mv c-g">3m 12s</div></div>
+        <div class="mc"><div class="ml">Answered</div><div class="mv c-p">96%</div></div>
+        <div class="mc"><div class="ml">Abandoned</div><div class="mv c-b">4%</div></div>
+      </div>
+      <div class="alert al-info">Detailed ACD breakdown by queue/skill is available once this tenant has call volume.</div>
+    `;
+  }
+  else if (sec === 'csat') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">CSAT</div><div class="sec-sub">Customer satisfaction scores</div></div></div>
+      <div class="mgrid">
+        <div class="mc"><div class="ml">Avg CSAT</div><div class="mv c-g">4.6 / 5</div></div>
+        <div class="mc"><div class="ml">Responses</div><div class="mv c-b">${(t.calls||0)}</div></div>
+        <div class="mc"><div class="ml">Promoters</div><div class="mv c-p">82%</div></div>
+      </div>
+      <div class="alert al-info">CSAT is collected via post-call IVR survey and shown here once responses come in.</div>
+    `;
+  }
+  else if (sec === 'queue') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Queue</div><div class="sec-sub">Calls waiting for an agent</div></div></div>
+      <div class="card"><div class="alert al-info">No calls waiting. Queued calls will appear here with wait time and position.</div></div>
+    `;
+  }
+  else if (sec === 'agents-rpt') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Agent report</div><div class="sec-sub">Performance by agent</div></div></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Agent</th><th>Role</th><th>Extension</th><th>Status</th><th>Languages</th></tr></thead>
+          <tbody>
+            ${users.length ? users.map(u => `
+              <tr>
+                <td style="font-weight:600">${u.name}</td>
+                <td>${u.role}</td>
+                <td class="mono">${u.exten}</td>
+                <td><span class="pill p-${u.status==='online'?'active':u.status==='busy'?'pro':'starter'}">${u.status}</span></td>
+                <td>${(u.langs||[]).join(', ')}</td>
+              </tr>
+            `).join('') : `<tr><td colspan="5" style="color:var(--mut)">No agents yet — add one from the Users page.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  else if (sec === 'billing') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Billing</div><div class="sec-sub">Usage-based AI cost breakdown</div></div></div>
+      <div class="mgrid">
+        <div class="mc"><div class="ml">This month</div><div class="mv c-b">$${(t.cost||0).toFixed(2)}</div></div>
+        <div class="mc"><div class="ml">Plan</div><div class="mv c-g">${t.plan||'-'}</div></div>
+        <div class="mc"><div class="ml">Calls billed</div><div class="mv c-p">${(t.calls||0).toLocaleString()}</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Cost by service</div>
+        <table>
+          <thead><tr><th>Service</th><th>Usage</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td>ASR (speech-to-text)</td><td>—</td><td>$${((t.cost||0)*0.3).toFixed(2)}</td></tr>
+            <tr><td>LLM (AI responses)</td><td>—</td><td>$${((t.cost||0)*0.4).toFixed(2)}</td></tr>
+            <tr><td>TTS (text-to-speech)</td><td>—</td><td>$${((t.cost||0)*0.2).toFixed(2)}</td></tr>
+            <tr><td>Translation</td><td>—</td><td>$${((t.cost||0)*0.1).toFixed(2)}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  else if (sec === 'bots') {
+    el.innerHTML = `
+      <div class="sec-hdr">
+        <div><div class="sec-title">VoiceBot agents</div><div class="sec-sub">Automated call handling</div></div>
+        <button class="btn acc" onclick="showAddBot()">+ Add bot agent</button>
+      </div>
+      <div class="alert al-info">Bot agents you create here call the API directly (POST /api/tenant/:id/bot/agents) — check the server logs to confirm they were saved.</div>
+    `;
+  }
+  else if (sec === 'campaigns') {
+    el.innerHTML = `
+      <div class="sec-hdr">
+        <div><div class="sec-title">Outbound campaigns</div><div class="sec-sub">Automated outbound calling</div></div>
+        <button class="btn acc" onclick="showAddCampaign()">+ New campaign</button>
+      </div>
+      <div class="alert al-info">Campaigns you create here call the API directly (POST /api/tenant/:id/bot/campaigns).</div>
+    `;
+  }
+  else if (sec === 'users') {
+    el.innerHTML = `
+      <div class="sec-hdr">
+        <div><div class="sec-title">Users</div><div class="sec-sub">Agents, supervisors & admins</div></div>
+        <button class="btn acc" onclick="showAddUser()">+ Add user</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Extension</th><th>Status</th></tr></thead>
+          <tbody>
+            ${users.length ? users.map(u => `
+              <tr>
+                <td style="font-weight:600">${u.name}</td>
+                <td class="mono">${u.email}</td>
+                <td><span class="pill p-${u.role}">${u.role}</span></td>
+                <td class="mono">${u.exten}</td>
+                <td>${u.status}</td>
+              </tr>
+            `).join('') : `<tr><td colspan="5" style="color:var(--mut)">No users yet.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  else if (sec === 'pricing') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Pricing</div><div class="sec-sub">Your rate card (set by superadmin)</div></div></div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Service</th><th>Rate</th></tr></thead>
+          <tbody>
+            <tr><td>ASR — $ per minute</td><td>$0.0060</td></tr>
+            <tr><td>TTS — $ per character</td><td>$0.000020</td></tr>
+            <tr><td>LLM — $ per 1k output tokens</td><td>$3.00</td></tr>
+            <tr><td>Translation — $ per character</td><td>$0.000010</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  else if (sec === 'pbx') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">PBX configuration</div><div class="sec-sub">Call routing setup</div></div></div>
+      <div class="card" style="max-width:500px">
+        <div class="frow">
+          <div class="fg"><label>PBX type</label><select id="pbx-type"><option ${t.pbx==='asterisk'?'selected':''}>asterisk</option><option ${t.pbx==='freeswitch'?'selected':''}>freeswitch</option><option ${t.pbx==='kamailio'?'selected':''}>kamailio</option><option>api</option><option>webhook</option></select></div>
+          <div class="fg"><label>Host</label><input id="pbx-host" placeholder="127.0.0.1"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Port</label><input id="pbx-port" placeholder="5038"></div>
+          <div class="fg"><label>Secret</label><input id="pbx-secret" type="password"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn acc" onclick="fetch(API_BASE+'/api/tenant/'+curTenant.id+'/pbx',{method:'PUT',headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})},body:JSON.stringify({type:document.getElementById('pbx-type').value,host:document.getElementById('pbx-host').value,port:document.getElementById('pbx-port').value})}).then(()=>alert('PBX config saved')).catch(()=>alert('Could not reach API'))">Save</button></div>
+      </div>
+    `;
+  }
+  else if (sec === 'webhooks') {
+    el.innerHTML = `
+      <div class="sec-hdr">
+        <div><div class="sec-title">Webhooks</div><div class="sec-sub">Send call events to external systems</div></div>
+        <button class="btn acc" onclick="showAddWH()">+ Add webhook</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Name</th><th>URL</th><th>Events</th><th>Status</th></tr></thead>
+          <tbody>
+            ${webhooks.length ? webhooks.map(w => `
+              <tr>
+                <td style="font-weight:600">${w.name}</td>
+                <td class="mono" style="font-size:11px">${w.url}</td>
+                <td style="font-size:11px;color:var(--mut)">${w.events}</td>
+                <td><span class="pill p-${w.enabled?'active':'starter'}">${w.enabled?'enabled':'disabled'}</span></td>
+              </tr>
+            `).join('') : `<tr><td colspan="4" style="color:var(--mut)">No webhooks yet.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+  else if (sec === 'crm') {
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">CRM integration</div><div class="sec-sub">Sync calls & contacts</div></div></div>
+      <div class="card" style="max-width:500px">
+        <div class="frow"><div class="fg"><label>CRM</label><select><option>HubSpot</option><option>Salesforce</option><option>Zoho</option><option>None</option></select></div></div>
+        <div class="frow full"><div class="fg"><label>API key</label><input type="password" placeholder="Paste your CRM API key"></div></div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn acc" onclick="alert('CRM connection saved (demo)')">Save</button></div>
+      </div>
+    `;
+  }
+  else if (sec === 'botconfig') {
+    const flags = [['inbound','Inbound bot'],['outbound','Outbound bot'],['rasa','Rasa'],['chatwoot','Chatwoot'],['dialogflow','Dialogflow'],['gpt4o','GPT-4o']];
+    el.innerHTML = `
+      <div class="sec-hdr"><div><div class="sec-title">Bot configuration</div><div class="sec-sub">Features enabled for your account by the superadmin</div></div></div>
+      <div class="card">
+        <table>
+          <thead><tr>${flags.map(f=>`<th>${f[1]}</th>`).join('')}</tr></thead>
+          <tbody><tr>${flags.map(() => `
+            <td><div style="width:28px;height:16px;border-radius:8px;background:var(--grn);border:1px solid rgba(0,229,160,.3);position:relative"><div style="position:absolute;width:10px;height:10px;border-radius:50%;background:#fff;top:2px;right:2px"></div></div></td>
+          `).join('')}</tr></tbody>
+        </table>
+        <div class="alert al-info" style="margin-top:10px">Feature availability is controlled by your Super Admin. Contact them to enable additional bot engines.</div>
+      </div>
+    `;
+  }
+}
+
 function loginAsTenant(tid) {
   const t=DEMO_TENANTS.find(x=>x.id===tid); if (!t) return;
   curUser={email:t.name+' Admin',role:'admin',name:t.name+' Admin',tenant_id:tid};
@@ -1428,7 +1702,7 @@ function loginAsTenant(tid) {
   document.getElementById('pg-tenant').classList.add('on');
   const rb=document.getElementById('role-badge');
   rb.textContent='ADMIN'; rb.className='tb-badge tb-badge-admin';
-  document.getElementById('user-lbl').textContent=t.name+' � Admin';
+  document.getElementById('user-lbl').textContent=t.name+' — Admin';
   buildTSB();
   document.querySelectorAll('#pg-tenant .sbi').forEach(b=>b.classList.remove('on'));
   document.querySelector('#pg-tenant .sbi').classList.add('on');
@@ -1437,7 +1711,7 @@ function loginAsTenant(tid) {
 
 function editTenant(tid) {
   const t=DEMO_TENANTS.find(x=>x.id===tid); if (!t) return;
-  openModal(`<div class="modal-title">Edit tenant � ${t.name}</div>
+  openModal(`<div class="modal-title">Edit tenant — ${t.name}</div>
     <div class="fg"><label>Plan</label><select id="et-plan"><option ${t.plan==='starter'?'selected':''}>starter</option><option ${t.plan==='pro'?'selected':''}>pro</option><option ${t.plan==='enterprise'?'selected':''}>enterprise</option></select></div>
     <div class="fg"><label>Status</label><select id="et-status"><option ${t.status==='active'?'selected':''}>active</option><option ${t.status==='suspended'?'selected':''}>suspended</option></select></div>
     <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="saveTenantEdit('${tid}')">Save</button></div>`);
@@ -1467,13 +1741,13 @@ function doCreate() {
 }
 
 function showAddUser() {
-  document.getElementById('user-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+  openModal(`
     <div class="modal-title">Add user / agent</div>
     <div class="frow"><div class="fg"><label>Name</label><input id="nu-name" placeholder="Jane Smith"></div><div class="fg"><label>Email</label><input id="nu-email" type="email"></div></div>
     <div class="frow"><div class="fg"><label>Role</label><select id="nu-role"><option>agent</option><option>supervisor</option><option>admin</option></select></div><div class="fg"><label>Extension</label><input id="nu-ext" placeholder="1005"></div></div>
     <div class="frow full"><div class="fg"><label>Password</label><input type="password" id="nu-pw" placeholder="Min 8 chars"></div></div>
     <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddUser()">Create</button></div>
-  </div></div>`;
+  `);
 }
 function doAddUser() {
   const n=document.getElementById('nu-name').value;
@@ -1482,19 +1756,19 @@ function doAddUser() {
   const tid=curTenant?.id;
   if (!tid) return;
   (DEMO_USERS[tid]=DEMO_USERS[tid]||[]).push({id:'u'+Date.now(),name:n,email:em,role:document.getElementById('nu-role').value,status:'offline', exten:document.getElementById('nu-ext').value||'1099',langs:['en']});
-  document.getElementById('user-modal').innerHTML='';
+  closeModal();
   tRender('users');
   fetch(`${API_BASE}/api/tenant/${tid}/users`, {method:'POST', headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})}, body:JSON.stringify({name:n,email:em,password:document.getElementById('nu-pw')?.value||'Agent@1234',role:document.getElementById('nu-role').value, exten:document.getElementById('nu-ext').value})}).catch(()=>{});
 }
 
 function showAddWH() {
-  document.getElementById('wh-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+  openModal(`
     <div class="modal-title">Add outbound webhook</div>
     <div class="frow full"><div class="fg"><label>Name</label><input id="whn" placeholder="My CRM webhook"></div></div>
     <div class="frow full"><div class="fg"><label>URL</label><input id="whu" placeholder="https://hooks.zapier.com/..."></div></div>
     <div class="frow full"><div class="fg"><label>Events (comma-separated)</label><input id="whe" value="call.ended,cdr,csat"></div></div>
     <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddWH()">Add</button></div>
-  </div></div>`;
+  `);
 }
 function doAddWH() {
   const n=document.getElementById('whn').value;
@@ -1503,13 +1777,13 @@ function doAddWH() {
   const tid=curTenant?.id;
   if (!tid) return;
   (DEMO_WH[tid]=DEMO_WH[tid]||[]).push({id:'wh'+Date.now(), name:n, url:u, events:document.getElementById('whe').value, enabled:true});
-  document.getElementById('wh-modal').innerHTML='';
+  closeModal();
   tRender('webhooks');
   fetch(`${API_BASE}/api/tenant/${tid}/webhooks`, {method:'POST', headers:{'Content-Type':'application/json', ...(token?{'Authorization':'Bearer '+token}:{})}, body:JSON.stringify({name:n, url:u, events:document.getElementById('whe')?.value.split(',')})}).catch(()=>{});
 }
 
 function showAddBot() {
-  document.getElementById('bot-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+  openModal(`
     <div class="modal-title">Add VoiceBot agent</div>
     <div class="frow"><div class="fg"><label>Name</label><input id="nb-name" placeholder="Support VoiceBot"></div><div class="fg"><label>Extension</label><input id="nb-ext" placeholder="9000"></div></div>
     <div class="frow"><div class="fg"><label>Bot type</label>
@@ -1531,7 +1805,7 @@ function showAddBot() {
     <div class="frow full"><div class="fg"><label>Escalation: max turns before handoff</label><input type="number" id="nb-maxturns" value="8" style="width:80px"></div></div>
     <div class="frow full"><div class="fg"><label>Greeting message</label><input id="nb-greet" value="Hello! I am VoiceBot. How can I help you today?"></div></div>
     <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddBot()">Create bot</button></div>
-  </div></div>`;
+  `);
 }
 
 function doAddBot() {
@@ -1552,7 +1826,7 @@ function doAddBot() {
 }
 
 function showAddCampaign() {
-  document.getElementById('camp-modal').innerHTML=`<div class="modal-wrap on" onclick="if(event.target===this)closeModal()"><div class="modal">
+  openModal(`
     <div class="modal-title">New outbound campaign</div>
     <div class="frow"><div class="fg"><label>Campaign name</label><input id="nc-name" placeholder="Appointment reminders"></div><div class="fg"><label>Bot type</label>
       <select id="nc-bot"><option value="claude">Claude AI</option><option value="rasa">Rasa</option><option value="chatwoot">Chatwoot</option><option value="gpt4o">GPT-4o</option><option value="custom">Custom HTTP</option></select></div></div>
@@ -1561,7 +1835,7 @@ function showAddCampaign() {
     <div class="frow"><div class="fg"><label>Max retries</label><input type="number" id="nc-retry" value="3" style="width:70px"></div><div class="fg"><label>AMD (voicemail detection)</label><select><option>Enabled</option><option>Disabled</option></select></div></div>
     <div class="frow full"><div class="fg"><label>Contacts (JSON array or paste CSV)</label><textarea style="width:100%;height:70px;font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--b2);color:var(--txt);padding:6px;border-radius:5px" id="nc-contacts" placeholder='[{"name":"John","phone":"+1234567890"},{"name":"Jane","phone":"+0987654321"}]'></textarea></div></div>
     <div class="mfooter"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn acc" onclick="doAddCampaign()">Create campaign</button></div>
-  </div></div>`;
+  `);
 }
 
 function doAddCampaign() {
@@ -1598,7 +1872,7 @@ function closeModal() {
   document.getElementById('modal-wrap').classList.remove('on');
 }
 
-// Auto-login from storage
+// Auto-login from storage (restores session across page refreshes)
 try {
   const u=sessionStorage.getItem('vb_user');
   const t=sessionStorage.getItem('vb_token');
@@ -1606,10 +1880,10 @@ try {
   if (u) {
     curUser=JSON.parse(u);
     token=t;
-    if (tn) curTenant=DEMO_TENANTS.find(x=>x.id===tn) || null;
+    curTenant = tn ? JSON.parse(tn) : null;
     afterLogin(curUser.role==='superadmin'?'sa':'tenant');
   }
-} catch {}
+} catch { clearSession(); }
 </script>
 </body>
 </html>

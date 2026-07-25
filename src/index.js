@@ -16,8 +16,8 @@ const log = createLogger('main');
 async function main() {
   console.log(`
 +--------------------------------------------------+
-¦  TechLife VoiceBridge Enterprise  v2.0.0         ¦
-¦  Multi-Tenant AI Call Center Platform            ¦
+|  TechLife VoiceBridge Enterprise  v2.0.0          |
+|  Multi-Tenant AI Call Center Platform             |
 +--------------------------------------------------+
 `);
 
@@ -33,19 +33,19 @@ async function main() {
   const dashboardPort = Number(process.env.DASHBOARD_PORT) || 3000;
 
   await startAPI(apiPort);
-  log.info(`REST API   ? http://0.0.0.0:${apiPort}  (Swagger: /api-docs)`);
+  log.info(`REST API   -> http://0.0.0.0:${apiPort}  (Swagger: /api-docs)`);
 
   await startWS(wsPort);
-  log.info(`WS Bridge  ? ws://0.0.0.0:${wsPort}`);
+  log.info(`WS Bridge  -> ws://0.0.0.0:${wsPort}`);
 
   await startWebhook(webhookPort);
-  log.info(`Webhooks   ? http://0.0.0.0:${webhookPort}`);
+  log.info(`Webhooks   -> http://0.0.0.0:${webhookPort}`);
 
   await startDash(dashboardPort);
-  log.info(`Dashboard  ? http://0.0.0.0:${dashboardPort}`);
+  log.info(`Dashboard  -> http://0.0.0.0:${dashboardPort}`);
 
   scheduleReports();
-  log.info('Scheduler  ? CDR daily, CSAT weekly, Billing monthly');
+  log.info('Scheduler  -> CDR daily, CSAT weekly, Billing monthly');
 
   log.info('');
   log.info('--------------------------------------------------');
