@@ -8,6 +8,8 @@ const { v4: uuid } = require('uuid');
 const { createLogger } = require('../core/logger');
 const db = require('../db/couch');
 const { processUtterance } = require('./engine');
+const aiClient = require('../ai/client');
+const media = require('./media');
 
 const log = createLogger('outbound');
 const activeCampaigns = new Map(); // campaignId -> { timer, paused }
@@ -29,6 +31,11 @@ async function createCampaign(tenantId, data) {
     retry_delay_min: data.retry_delay_min || 60,
     amd_enabled: data.amd_enabled !== false,
     voicemail_msg: data.voicemail_msg || null,
+    // New media/tts fields
+    audio_file: data.audio_file || null,         // single audio for whole campaign
+    tts_template: data.tts_template || null,     // template text to synthesize per-contact
+    tts_voice: data.tts_voice || null,
+    tts_lang: data.tts_lang || 'en',
     stats: { total: data.contacts?.length || 0, dialled: 0, answered: 0, voicemail: 0, failed: 0, completed: 0, converted: 0 },
     created_at: new Date().toISOString(),
   };
@@ -59,6 +66,30 @@ async function startCampaign(tenantId, campaignId) {
   const camp = await getCampaign(tenantId, campaignId);
   if (!camp) throw new Error('Campaign not found');
   if (camp.status === 'running') throw new Error('Already running');
+
+  // Pre-generate TTS audio per-contact if template provided
+  if (camp.tts_template) {
+    try {
+      log.info('Pre-generating TTS for campaign %s (%d contacts)', campaignId, (camp.contacts||[]).length);
+      for (let i = 0; i < (camp.contacts || []).length; i++) {
+        const contact = camp.contacts[i];
+        if (contact.audio_file) continue; // already present
+        const text = interpolateScript(camp.tts_template, contact);
+        // Determine language to synthesize
+        const lang = contact.lang || camp.tts_lang || 'en';
+        const buf = await aiClient.synthesize(text, lang, null);
+        if (buf) {
+          const filename = `${campaignId}_${i}.wav`;
+          const publicPath = await media.saveAudio(tenantId, filename, buf.toString('base64'));
+          contact.audio_file = publicPath;
+        } else {
+          log.warn('TTS generation failed for campaign %s contact %s', campaignId, contact.phone);
+        }
+      }
+      // persist updated contacts
+      await db.update(db.tdb(tenantId, 'config'), campaignId, { contacts: camp.contacts });
+    } catch (e) { log.warn('TTS pre-generation error: %s', e.message); }
+  }
 
   await db.update(db.tdb(tenantId, 'config'), campaignId, { status: 'running', started_at: new Date().toISOString() });
   log.info('Campaign starting [%s]: %s', tenantId, camp.name);
@@ -107,6 +138,8 @@ async function dialContact(tenantId, campaignId, contact, campaign) {
     called_num: contact.phone, contact_name: contact.name,
     start_time: new Date().toISOString(),
     status: 'dialling', bot_type: campaign.bot_type,
+    // playback metadata
+    playback: { audio_file: contact.audio_file || campaign.audio_file || null, tts_template: campaign.tts_template || null, tts_voice: campaign.tts_voice || null }
   });
 
   // Trigger PBX via webhook / direct API (platform-agnostic)
@@ -122,7 +155,11 @@ async function dialContact(tenantId, campaignId, contact, campaign) {
         bot_type: campaign.bot_type,
         script: campaign.script,
         contact,
-        ws_url: `ws://127.0.0.1:${process.env.WS_PORT || 8765}?tenant=${tenantId}&pbx=outbound&caller=${contact.phone}&campaign=${campaignId}`,
+        // include playback hints for PBX handler
+        play_audio: contact.audio_file || campaign.audio_file || null,
+        tts_text: contact.audio_file ? null : (campaign.tts_template ? interpolateScript(campaign.tts_template, contact) : null),
+        tts_voice: campaign.tts_voice || null,
+        ws_url: `ws://127.0.0.1:${process.env.WS_PORT || 8765}?tenant=${tenantId}&pbx=outbound&caller=${contact.phone}&campaign=${campaignId}&call_id=${callId}`,
       }, { timeout: 5000 });
     } else {
       // Simulate answered for demo / testing without real PBX
@@ -142,6 +179,7 @@ async function dialContact(tenantId, campaignId, contact, campaign) {
 }
 
 function interpolateScript(template, contact) {
+  if (!template) return '';
   return template.replace(/\{(\w+)\}/g, (_, key) => contact[key] || '');
 }
 
