@@ -19,10 +19,11 @@ const billing = require('../billing/engine');
 const { sessions } = require('../realtime/ws-bridge');
 
 const botRouter = require('../bot/api');
+const mediaApi  = require('../bot/media-api');
 const log = createLogger('api');
 
 const swaggerSpec = swaggerJSDoc({
-  definition: { openapi:'3.0.0', info:{ title:'TechLife VoiceBridge Enterprise API', version:'2.0.0', description:'Multi-Tenant AI Call Center Platform' }, servers:[{ url:'http://localhost:4000' }], components:{ securitySchemes:{ bearerAuth:{ type:'http', scheme:'bearer', bearerFormat:'JWT' } } }, security:[{ bearerAuth:[] }] },
+  definition: { openapi:'3.0.0', info:{ title:'TechLife VoiceBridge Enterprise API', version:'2.0.0', description:'Multi-Tenant AI Call Center Platform' }, servers:[{ url:'http://localhost:4000' }] },
   apis: [__filename],
 });
 
@@ -31,10 +32,14 @@ async function startAPI(port) {
   app.use(helmet({ contentSecurityPolicy:false, crossOriginOpenerPolicy:false, originAgentCluster:false }));
   app.use(cors());
   app.use(compression());
-  app.use(express.json({ limit:'10mb' }));
+  app.use(express.json({ limit:'20mb' }));
   app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
   app.use('/', express.static(path.join(__dirname, '../../public')));
+
+  // Bot routes (includes campaigns, agents, analytics)
   app.use('/api/tenant/:tenantId/bot', botRouter);
+  // Media upload/listing for tenant campaigns
+  app.use('/api/tenant/:tenantId/bot', mediaApi);
 
   // ════════════════════════════════════════════════════════════
   //  HEALTH
@@ -155,7 +160,7 @@ async function startAPI(port) {
     const rows = await db.viewQuery(db.tdb(req.params.tenantId,'calls'), 'idx', 'active', { key:req.params.tenantId, include_docs:true });
     const calls = rows.map(r => r.doc||r.value);
     // Merge with live sessions
-    const liveSessions = [...sessions.entries()].filter(([,s]) => s.tenantId===req.params.tenantId).map(([id,s]) => ({ call_id:id, pbx:s.pbxType, duration:Math.round((Date.now()-s.started)/1000), status:'active' }));
+    const liveSessions = [...sessions.entries()].filter(([,s]) => s.tenantId===req.params.tenantId).map(([id,s]) => ({ call_id:id, pbx:s.pbxType, duration:Math.round((Date.now()-s.started)/1000), agent:s.agent||null }));
     res.json({ calls, live_sessions:liveSessions, count:calls.length });
   });
 
@@ -307,9 +312,24 @@ async function startAPI(port) {
     const { from, to, format } = req.query;
     const data = await reports.getCDR(req.params.tenantId, from, to, req.query);
     if (format === 'csv') {
+      // flatten playback metadata for CSV export
+      const mapped = (data.records || []).map(r => ({
+        _id: r._id,
+        start_time: r.start_time || r.recorded_at || '',
+        caller_num: r.caller_num || '',
+        agent_id: r.agent_id || '',
+        queue: r.queue || '',
+        duration_sec: r.duration_sec || '',
+        wait_sec: r.wait_sec || '',
+        disposition: r.disposition || '',
+        caller_lang: r.caller_lang || '',
+        playback_audio_file: r.playback?.audio_file || '',
+        playback_tts_text: r.playback?.tts_template || '',
+        playback_tts_voice: r.playback?.tts_voice || '',
+      }));
       res.setHeader('Content-Type','text/csv');
       res.setHeader('Content-Disposition','attachment; filename=cdr.csv');
-      return res.send(reports.toCSV(data.records, ['_id','start_time','caller_num','agent_id','queue','duration_sec','wait_sec','disposition','caller_lang']));
+      return res.send(reports.toCSV(mapped, ['_id','start_time','caller_num','agent_id','queue','duration_sec','wait_sec','disposition','caller_lang','playback_audio_file','playback_tts_text','playback_tts_voice']));
     }
     res.json(data);
   });
