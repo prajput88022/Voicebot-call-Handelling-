@@ -1,6 +1,5 @@
 'use strict';
 const db = require('../db/couch');
-const { getMonthlyBilling } = require('../billing/engine');
 const { createLogger } = require('../core/logger');
 const log = createLogger('reports');
 
@@ -41,7 +40,7 @@ async function getCSATReport(tenantId, from, to) {
   const inRange = all.filter(r=>{ const t=r.ts||''; return(!from||t>=from)&&(!to||t<=to+'Z'); });
   const total=inRange.length, sumR=inRange.reduce((s,r)=>s+(r.rating||0),0);
   const by_rating={1:0,2:0,3:0,4:0,5:0}, by_agent={};
-  for (const r of inRange) { by_rating[Math.round(r.rating)]=(by_rating[Math.round(r.rating)]||0)+1; if(r.agent_id){by_agent[r.agent_id]=by_agent[r.agent_id]||{count:0,sum:0};by_agent[r.agent_id].count++;by_agent[r.agent_id].sum+=r.rating||0;} }
+  for (const r of inRange) { by_rating[Math.round(r.rating)]=(by_rating[Math.round(r.rating)]||0)+1; if(r.agent_id){by_agent[r.agent_id]=by_agent[r.agent_id]||{count:0,sum:0};by_agent[r.agent_id].count++;by_agent[r.agent_id].sum+=(r.rating||0);} }
   for (const a of Object.values(by_agent)) a.avg=a.count?+(a.sum/a.count).toFixed(2):0;
   const promoters=inRange.filter(r=>r.rating>=4).length, detractors=inRange.filter(r=>r.rating<=2).length;
   return { period:{from,to}, total_responses:total, avg_rating:total?+(sumR/total).toFixed(2):0, nps:total?Math.round((promoters-detractors)/total*100):0, promoters, detractors, passives:total-promoters-detractors, by_rating, by_agent };
@@ -55,7 +54,7 @@ async function getQueueReport(tenantId, from, to) {
 async function getAgentReport(tenantId, from, to) {
   const { summary } = await getCDR(tenantId, from, to);
   const csat = await getCSATReport(tenantId, from, to);
-  const agents = Object.entries(summary.by_agent).map(([agentId,data])=>({ agent_id:agentId, total_calls:data.calls, total_duration:data.duration, avg_duration:data.calls?Math.round(data.duration/data.calls):0, missed_calls:data.missed, answer_rate_pct:data.calls?Math.round((data.calls-data.missed)/data.calls*100):0, csat_avg:csat.by_agent[agentId]?.avg||null, csat_responses:csat.by_agent[agentId]?.count||0 }));
+  const agents = Object.entries(summary.by_agent).map(([agentId,data])=>({ agent_id:agentId, total_calls:data.calls, total_duration:data.duration, avg_duration:data.calls?Math.round(data.duration/data.calls):0, missed:data.missed }));
   agents.sort((a,b)=>b.total_calls-a.total_calls);
   return { period:{from,to}, agents };
 }
@@ -73,7 +72,7 @@ async function getDashboardSummary(tenantId) {
   let activeCalls=0;
   try { activeCalls=(await db.viewQuery(db.tdb(tenantId,'calls'),'idx','active',{key:tenantId})).length; } catch {}
   return { tenant_id:tenantId, ts:new Date().toISOString(), active_calls:activeCalls,
-    today:{ total_calls:cdr.summary.total_calls||0, answered:cdr.summary.answered||0, missed:cdr.summary.missed||0, avg_duration:cdr.summary.avg_duration_sec||0, avg_wait:cdr.summary.avg_wait_sec||0, answer_rate:cdr.summary.answer_rate_pct||0 },
+    today:{ total_calls:cdr.summary.total_calls||0, answered:cdr.summary.answered||0, missed:cdr.summary.missed||0, avg_duration:cdr.summary.avg_duration_sec||0, avg_wait:cdr.summary.avg_wait_sec||0 },
     month:{ csat_avg:csat.avg_rating||0, nps:csat.nps||0, billing_cost:billing.total_cost||0, billing_queries:billing.total_queries||0 },
     by_lang:cdr.summary.by_lang||{}, by_hour:cdr.summary.by_hour||{} };
 }
